@@ -5,6 +5,7 @@ from numpy import linspace
 from numpy import ndarray
 from numpy import array
 from numpy import concatenate
+from numpy import isnan
 
 import matplotlib.pyplot as plt
 
@@ -31,6 +32,9 @@ E_PLOT = (0)
 N_PLOT = (1,)
 S_PLOT = (2,)
 
+CONST_T0 = 1.0
+CONST_MU0 = array([1.0, 1.0, 1.0]).reshape(-1,1)
+
 def solve_and_plot(
         ax_1: plt.Axes,
         ax_2: plt.Axes,
@@ -43,28 +47,30 @@ def solve_and_plot(
         linestyle: List[str],
         add_labels: bool = False,
 ) -> None:
-    soln_1 = odeint(eom, y0s, rhos_1)
-    soln_2 = odeint(eom, y0s, rhos_2)
+    soln_1 = odeint(eom, y0s, rhos_1, args=(CONST_T0,CONST_MU0,))
+    soln_2 = odeint(eom, y0s, rhos_2, args=(CONST_T0,CONST_MU0,))
     t_hat = concatenate((soln_1[:, 0][::-1], soln_2[:, 0]))
-    mu_hat = concatenate((soln_1[:, 1][::-1], soln_2[:, 1]))
-    pi_bar_hat = concatenate((soln_1[:, 2][::-1], soln_2[:, 2]))
+    mu_hat = [concatenate((soln_1[:, i][::-1], soln_2[:, i]))
+              for i in [1, 2, 3]]
+    pi_bar_hat = concatenate((soln_1[:, 4][::-1], soln_2[:, 4]))
     rhos = concatenate((rhos_1[::-1], rhos_2))
 
     t_interp = interp1d(rhos, t_hat)
-    mu_interp = interp1d(rhos, mu_hat)
+    mu_interp = [interp1d(rhos, f) for f in mu_hat]
     pi_interp = interp1d(rhos, pi_bar_hat)
 
+    ics = {'temperature_0': CONST_T0, 'chem_potential_0': CONST_MU0}
     for n, tau in enumerate(taus):
         t_evol = milne_T(tau, xs, 1, t_interp)
-        mu_evol = milne_mu(tau, xs, 1, mu_interp)
+        mu_evol = milne_mu(tau, xs, 1, mu_interp[0])
 
-        e_evol = milne_energy(tau, xs, 0.0, 1.0, t_interp, mu_interp)  
-        n_evol = milne_number(tau, xs, 0.0, 1.0, t_interp, mu_interp)  
-        s_evol = milne_entropy(tau, xs, 0.0, 1.0, t_interp, mu_interp) 
-
+        e_evol = milne_energy(tau, xs, 0.0, 1.0, t_interp, mu_interp, **ics)
+        n_evol = milne_number(tau, xs, 0.0, 1.0, t_interp, mu_interp, **ics)[0]
+        s_evol = milne_entropy(tau, xs, 0.0, 1.0, t_interp, mu_interp, **ics)
+            
         ax_1[T_PLOT].plot(xs, t_evol,
                         color=color[n], lw=2, ls=linestyle[n],
-                        label=r'$\mu_0/T_0='+f'{y0s[1]/y0s[0]:.1f}$'
+                        label=r'$\mu_0/T_0='+f'{y0s[1]/y0s[0]:.2f}$'
                         if n == 0 else None)
         ax_1[MU_PLOT].plot(xs, mu_evol,
                            color=color[n], lw=2, ls=linestyle[n],
@@ -79,6 +85,7 @@ def solve_and_plot(
             t_interp, 
             mu_interp, 
             pi_interp,
+            **ics,
             nonzero_xy=True,
         )
 
@@ -94,7 +101,7 @@ def solve_and_plot(
         
         ax_2[E_PLOT].plot(xs, e_evol, #  / t_evol ** 4,
                           color=color[n], lw=2, ls=linestyle[n],
-                          label=r'$\mu_0/T_0='+f'{y0s[1]/y0s[0]:.1f}$'
+                          label=r'$\mu_0/T_0='+f'{y0s[1]/y0s[0]:.2f}$'
                           if n == 0 else None)
         ax_2[N_PLOT].plot(xs, n_evol, #  / t_evol ** 3,
                         color=color[n], lw=2, ls=linestyle[n],
@@ -109,51 +116,32 @@ def main():
 
     fig2, ax2 = plt.subplots(ncols=3, nrows=1, figsize=(3 * 7, 1 * 7))
 
-    y0s = array([1.2, 1e-20 * 1.2, 0.0])
     rhos_1 = linspace(-10, 0, 1000)[::-1]
     rhos_2 = linspace(0, 10, 1000)
+    taus = array([1.2, 2.0, 3.0])
     xs = linspace(-6, 6, 200)
 
-    solve_and_plot(
-        ax_1=ax,
-        ax_2=ax2,
-        y0s=y0s,
-        rhos_1=rhos_1,
-        rhos_2=rhos_2,
-        xs=xs,
-        taus=array([1.2, 2.0, 3.0]),
-        color=3 * ['black'],
-        linestyle=['solid', 'dashed', 'dotted'],
-        add_labels=True,
-    )
 
-    y0s = array([1.2, 1.5 * 1.2, 0.0])
-
-    solve_and_plot(
-        ax_1=ax,
-        ax_2=ax2,
-        y0s=y0s,
-        rhos_1=rhos_1,
-        rhos_2=rhos_2,
-        xs=xs,
-        taus=array([1.2, 2.0, 3.0]),
-        color=3 * ['red'],
-        linestyle=['solid', 'dashed', 'dotted'],
-    )
-
-    y0s = array([1.2, 3 * 1.2, 0])
-
-    solve_and_plot(
-        ax_1=ax,
-        ax_2=ax2,
-        y0s=y0s,
-        rhos_1=rhos_1,
-        rhos_2=rhos_2,
-        xs=xs,
-        taus=array([1.2, 2.0, 3.0]),
-        color=3 * ['blue'],
-        linestyle=['solid', 'dashed', 'dotted']
-    )
+    t0 = 1.2
+    colors = ['black', 'red', 'blue']
+    for n, alpha in enumerate([0.01, 0.03, 0.05]):
+        y0s = array([
+            t0,
+            *[alpha * t0 for _ in range(3)],
+            0.0
+        ])
+        solve_and_plot(
+            ax_1=ax,
+            ax_2=ax2,
+            y0s=y0s,
+            rhos_1=rhos_1,
+            rhos_2=rhos_2,
+            xs=xs,
+            taus=taus,
+            color=3 * [colors[n]],
+            linestyle=['solid', 'dashed', 'dotted'],
+            add_labels=True if n == 0 else False,
+        )
 
     costumize_axis(
         ax=ax[T_PLOT],
