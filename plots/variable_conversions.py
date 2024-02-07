@@ -4,10 +4,13 @@ from numpy import arcsinh
 from numpy import arctanh
 from numpy import sqrt
 from numpy import fabs
+from numpy import where
+from numpy import array
 
 from scipy.interpolate import interp1d
 
 from typing import Union
+from typing import List
 
 from equations_of_motion import energy
 from equations_of_motion import number
@@ -83,22 +86,34 @@ def milne_energy(
         y: Union[float, ndarray],
         q: float,
         ads_T: interp1d,
-        ads_mu: interp1d,
+        ads_mu: List[interp1d],
+        temperature_0: float,
+        chem_potential_0: ndarray,
         tol: float = 1e-20,
 ) -> Union[float, ndarray]:
     r = sqrt(x ** 2 + y ** 2)
     rh = rho(tau, r, q)
     temp = ads_T(rh)
-    mu = ads_mu(rh)
+    mu = array([f(rh) for f in ads_mu])
 
     if type(temp) is ndarray:
-        return HBARC * energy(temperature=temp, chem_potential=mu) / tau ** 4
+        return HBARC * energy(
+            temperature=temp,
+            chem_potential=mu,
+            temperature_0=temperature_0,
+            chem_potential_0=chem_potential_0
+        ) / tau ** 4
     else:
         if temp <= tol:
             temp = tol
         if mu <= tol:
             temp = tol
-    e = HBARC * energy(temperature=temp, chem_potential=mu) / tau ** 4
+    e = HBARC * energy(
+        temperature=temp,
+        chem_potential=mu,
+        temperature_0=temperature_0,
+        chem_potential_0=chem_potential_0
+    ) / tau ** 4
     return tol if e < tol else e
 
 
@@ -108,47 +123,72 @@ def milne_number(
         y: Union[float, ndarray],
         q: float,
         ads_T: interp1d,
-        ads_mu: interp1d,
+        ads_mu: List[interp1d],
+        temperature_0: float,
+        chem_potential_0: ndarray,
         tol: float = 1e-20,
 ) -> Union[float, ndarray]:
     r = sqrt(x ** 2 + y ** 2)
     rh = rho(tau, r, q)
     temp = ads_T(rh)
-    mu = ads_mu(rh)
+    mu = array([f(rh) for f in ads_mu])
 
     if type(temp) is ndarray:
-        return number(temperature=temp, chem_potential=mu) / tau ** 3
+        return number(
+            temperature=temp,
+            chem_potential=mu,
+            temperature_0=temperature_0,
+            chem_potential_0=chem_potential_0
+        )
     else:
         if temp <= tol:
             temp = tol
         if mu <= tol:
             temp = tol
-    n = number(temperature=temp, chem_potential=mu) / tau ** 3
-    return tol if n < tol else n
+    n = number(
+        temperature=temp,
+        chem_potential=mu,
+        temperature_0=temperature_0,
+        chem_potential_0=chem_potential_0
+    )
+    n[where(n < tol)] = tol
+    return n
 
 
 def milne_entropy(
-        tau: float,
+        tau: Union[float, ndarray],
         x: Union[float, ndarray],
         y: Union[float, ndarray],
         q: float,
         ads_T: interp1d,
-        ads_mu: interp1d,
+        ads_mu: List[interp1d],
+        temperature_0: float,
+        chem_potential_0: ndarray,
         tol: float = 1e-20,
 ) -> Union[float, ndarray]:
     r = sqrt(x ** 2 + y ** 2)
     rh = rho(tau, r, q)
     temp = ads_T(rh)
-    mu = ads_mu(rh)
+    mu = array([f(rh) for f in ads_mu])
 
     if type(temp) is ndarray:
-        return entropy(temperature=temp, chem_potential=mu) / tau ** 3
+        return entropy(
+            temperature=temp,
+            chem_potential=mu,
+            temperature_0=temperature_0,
+            chem_potential_0=chem_potential_0
+        ) / tau ** 3
     else:
         if temp <= tol:
             temp = tol
         if mu <= tol:
             temp = tol
-    s = entropy(temperature=temp, chem_potential=mu) / tau ** 3
+    s = entropy(
+        temperature=temp, 
+        chem_potential=mu,
+        temperature_0=temperature_0,
+        chem_potential_0=chem_potential_0
+    ) / tau ** 3
     return tol if s < tol else s
 
 
@@ -158,14 +198,17 @@ def milne_pi(
         y: Union[float, ndarray],
         q: float,
         ads_T: interp1d,
-        ads_mu: interp1d,
+        ads_mu: List[interp1d],
         ads_pi_bar_hat: interp1d,
+        temperature_0: float,
+        chem_potential_0: ndarray,
         tol: float = 1e-20,
         nonzero_xy: bool = False,
 ) -> float:
     r = sqrt(x ** 2 + y ** 2)
     temp = ads_T(rho(tau, r, q))
-    mu = ads_mu(rho(tau, r, q))
+    rh = rho(tau, r, q)
+    mu = array([f(rh) for f in ads_mu])
 
     if type(temp) is ndarray:
         pass
@@ -175,8 +218,8 @@ def milne_pi(
         if mu <= tol:
             temp = tol
 
-    e = energy(temperature=temp, chem_potential=mu)
-    p = pressure(temperature=temp, chem_potential=mu)
+    e = energy(temp, mu, temperature_0, chem_potential_0)
+    p = pressure(temp, mu, temperature_0, chem_potential_0)
 
     pi_hat = HBARC * (e + p) * ads_pi_bar_hat(rho(tau, r, q)) 
     pi_nn = pi_hat / tau ** 6
