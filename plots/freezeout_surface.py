@@ -50,7 +50,8 @@ from typing import Union
 from typing import Tuple
 
 CONST_T0 = 1.0
-CONST_MU0 = array([1.0, 1.0, 1.0]).reshape(-1,1)
+CONST_MU0 = array([1.0, 1.0, 1.0]).reshape(-1, 1)
+
 
 def find_freezeout_tau(
         e_interp: interp1d,
@@ -59,7 +60,7 @@ def find_freezeout_tau(
         q: float,
 ) -> float:
     return newton(
-        lambda tau: 
+        lambda tau:
             e_freezeout - e_interp(rho(tau, r, q)) / tau ** 4,
         x0=0.1,
         x1=0.2,
@@ -72,7 +73,7 @@ def find_isentropic_temperature(
     s_n: float,
 ) -> float:
     return newton(
-        lambda t: (CONST_MU0[0,0] / CONST_T0) ** 2 * t / mu- s_n,
+        lambda t: (CONST_MU0[0, 0] / CONST_T0) ** 2 * t / mu - s_n,
         x0=0.1,
         x1=0.2
     )
@@ -81,7 +82,7 @@ def find_isentropic_temperature(
 def denergy_dtau(
         ys: ndarray,
         tau: float,
-        r:float,
+        r: float,
         q: float,
         temperature_0: float,
         chem_potential_0: ndarray,
@@ -90,14 +91,14 @@ def denergy_dtau(
     chem_potential = array([mu_B, mu_S, mu_Q])
     derivative = 1 + q ** 2 * (r ** 2 + tau ** 2)
     derivative /= tau * sqrt(
-        1 
+        1
         +
         q ** 4 * (r ** 2 - tau ** 2) ** 2
         +
         2 * q ** 2 * (r ** 2 + tau ** 2)
     )
     return_value = derivative * denergy_drho(
-        ys, rho(tau, r, q), temperature_0, chem_potential_0) * tau 
+        ys, rho(tau, r, q), temperature_0, chem_potential_0) * tau
     return_value -= 4.0 * energy(
         temperature,
         chem_potential,
@@ -111,14 +112,14 @@ def denergy_dtau(
 def denergy_dr(
         ys: ndarray,
         tau: float,
-        r:float,
+        r: float,
         q: float,
-        temperature_0: float, 
+        temperature_0: float,
         chem_potential_0: ndarray,
 ) -> float:
     derivative = - q * r / tau
     derivative /= sqrt(
-        1 + ((1 + (q * r) ** 2 - (q * tau) ** 2 ) / (2 * q * tau)) ** 2
+        1 + ((1 + (q * r) ** 2 - (q * tau) ** 2) / (2 * q * tau)) ** 2
     )
     return derivative * denergy_drho(
         ys, rho(tau, r, q), temperature_0, chem_potential_0) / tau ** 4
@@ -145,14 +146,14 @@ def do_freezeout_surfaces(
         norm_scale: float,
         q: float
 ) -> Tuple[
-        float,
-        float,
-        float,
-        float, 
-        List[ndarray], 
-        List[ndarray], 
-        List[ndarray]
-    ]:
+    float,
+    float,
+    float,
+    float,
+    List[ndarray],
+    List[ndarray],
+    List[ndarray]
+]:
     # This function does a lot more work than it needs to...
     # returns:
     #   - min entropy at freezeout for all ICs
@@ -193,11 +194,11 @@ def do_freezeout_surfaces(
         for i, x in enumerate(xs):
             try:
                 freezeout_times[i] = [
-                    x, 
+                    x,
                     find_freezeout_tau(
                         e_interp, e_freezeout, x, q
                     )
-                ]  
+                ]
             except (RuntimeError or ValueError):
                 # print(i, x, "failed")
                 freezeout_times[i] = [x, 1e-12]
@@ -288,27 +289,27 @@ def solve_and_plot(
         update_color_bar: bool = False,
         plot_s_n: bool = False,
 ) -> None:
-   
+
     skip_size = 8
     min_s, max_s, min_tau, max_tau, fo_surfaces, \
         fo_entropies, fo_normals = do_freezeout_surfaces(
-        rhos_1=rhos_1,
-        rhos_2=rhos_2,
-        xs=xs,
-        T0=y0s[0],
-        pi0=y0s[2],
-        skip_size=skip_size,
-        e_freezeout=e_freezeout,
-        norm_scale=norm_scale,
-        q=q,
-    )
+            rhos_1=rhos_1,
+            rhos_2=rhos_2,
+            xs=xs,
+            T0=y0s[0],
+            pi0=y0s[2],
+            skip_size=skip_size,
+            e_freezeout=e_freezeout,
+            norm_scale=norm_scale,
+            q=q,
+        )
 
-    evol_taus_log = linspace(log(0.01),  log(3), 1000)
+    evol_taus_log = linspace(log(0.01), log(3), 1000)
     evol_taus = exp(evol_taus_log)
 
     xis = [1e-20, 1, 2, 3]
     shifts = array([0.0, 0.0, 1.0, 2.0]) / 100
-    colors=['black', 'red', 'blue']
+    colors = ['black', 'red', 'blue']
     linestyles = ['solid', 'dashed', 'dotted']
     for itr in range(len(fo_surfaces)):
         freezeout_times = fo_surfaces[itr]
@@ -344,7 +345,6 @@ def solve_and_plot(
             norm=Normalize(vmin=0, vmax=freezeout_s.size)
         )
 
-        
         if update_color_bar and itr == 1:
             norm = Normalize(
                 vmin=min_s,
@@ -355,14 +355,12 @@ def solve_and_plot(
                 cmap=heat_map
             )
             cax = fig.colorbar(s, ax=ax[0], orientation='vertical', pad=0.01,
-                            format='%.2f').ax
+                               format='%.2f').ax
             cax.yaxis.set_ticks(linspace(min_s, max_s, 7))
             for t in cax.get_yticklabels():
                 t.set_fontsize(18)
             cax.set_ylabel(r'$s(\tau, x)$ [GeV$^{3}$]', fontsize=20)
-        
 
-            
         if itr == 0:
             continue
 
@@ -375,14 +373,14 @@ def solve_and_plot(
         #     tau0 = evol_taus[0]
         #     tauf = evol_taus[-1]
         #     norm = Normalize(vmin=tau0, vmax=tauf)
-        #     sm = ScalarMappable(norm=norm, cmap=cmap)                        
+        #     sm = ScalarMappable(norm=norm, cmap=cmap)
         #     cax = fig.colorbar(sm, ax=ax[1], orientation='vertical', pad=0.01,
         #                     format='%.2f').ax
         #     cax.yaxis.set_ticks(linspace(tau0, tauf, 7))
         #     for t in cax.get_yticklabels():
         #         t.set_fontsize(18)
         #     cax.set_ylabel(r'$\tau$ [fm/$c$]', fontsize=20)
-                
+
         xi = xis[itr]
         ys = [y0s[0], xi * y0s[0], xi * y0s[0], xi * y0s[0], y0s[2]]
         soln_1 = odeint(eom, ys, rhos_1, args=(CONST_T0, CONST_MU0))
@@ -393,7 +391,7 @@ def solve_and_plot(
                   for i in [1, 2, 3]]
         t_interp = interp1d(rhos, t_hat)
         mu_interp = [interp1d(rhos, f) for f in mu_hat]
-        
+
         s_interp = interp1d(rhos, entropy(t_hat, mu_hat))
         n_interp = [*interp1d(rhos, number(t_hat, mu_hat))]
 
@@ -401,7 +399,8 @@ def solve_and_plot(
         evol_mus = zeros((rs.size, evol_taus.size))
         evol_temps = zeros_like(evol_mus)
         for nn, r0 in enumerate(rs):
-            evol_xs = odeint(dx_dtau, array([r0, r0, 0]), exp(evol_taus_log), args=(1.0,))
+            evol_xs = odeint(dx_dtau, array(
+                [r0, r0, 0]), exp(evol_taus_log), args=(1.0,))
             evol_rs = sqrt(evol_xs[:, 0] ** 2 + evol_xs[:, 1] ** 2)
             evol_mus[nn] = milne_mu(evol_taus, evol_rs, 1.0, mu_interp[0])
             evol_temps[nn] = milne_T(evol_taus, evol_rs, 1.0, t_interp)
@@ -416,9 +415,9 @@ def solve_and_plot(
         )
 
         # ax[1].scatter(
-        #     # milne_mu(taus, 0.0, 1.0, mu_interp), 
+        #     # milne_mu(taus, 0.0, 1.0, mu_interp),
         #     # milne_T(taus, 0.0, 1.0, t_interp),
-        #     milne_mu(taus, x_FOs, 1.0, mu_interp), 
+        #     milne_mu(taus, x_FOs, 1.0, mu_interp),
         #     milne_T(taus, x_FOs, 1.0, t_interp) + shifts[itr],
         #     color='black',
         #     s=4.0,
@@ -442,13 +441,12 @@ def solve_and_plot(
         #     cmap=cmap
         # )
 
-
         if plot_s_n:
             _xs = concatenate((-xs[::-1], xs))
             for k, tau in enumerate([1.2, 2.0, 3.0]):
                 label_string_2 = ''
                 if k == 0:
-                    label_string_2 +=  r'$\mu_0/T_0 = ' + f'{xis[itr]:.1f}$'
+                    label_string_2 += r'$\mu_0/T_0 = ' + f'{xis[itr]:.1f}$'
 
                 rh = rho(tau, _xs, 1)
                 ax[2].plot(
@@ -456,12 +454,13 @@ def solve_and_plot(
                     s_interp(rh) / n_interp(rh)[0],
                     ls=linestyles[k],
                     color=colors[itr],
-                    label= label_string_2
+                    label=label_string_2
                 )
     return heat_map
 
 
-# Plot the tau components and r components separately, to see which has the large change
+# Plot the tau components and r components separately, to see which has
+# the large change
 
 
 def main():

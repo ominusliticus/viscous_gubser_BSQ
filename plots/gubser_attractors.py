@@ -66,7 +66,6 @@ def solve_and_plot(
     e_interp = interp1d(rhos, energy(t_hat, mu_hat))
     p_interp = interp1d(rhos, pressure(t_hat, mu_hat))
 
-
     alpha = 1.0
     for n, x in enumerate(xs):
         pi_hat = pi_interp(rho(taus, x, 1))
@@ -80,7 +79,7 @@ def solve_and_plot(
             for tau, tt, mm in zip(taus, ts, mus)
         ])
         ax.plot(taus / tau_r, pi_hat, lw=2, color=color[0])
-        ax.plot(taus / tau_r, pi_NS / (es + ps), color='black', ls='dashed' )
+        ax.plot(taus / tau_r, pi_NS / (es + ps), color='black', ls='dashed')
 
 
 if __name__ == "__main__":

@@ -35,7 +35,7 @@ def costumize_axis(ax: plt.Axes, x_title: str, y_title: str):
 
 def autoscale_y(ax, margin=0.1):
     """
-    This function rescales the y-axis based on the data that is visible given 
+    This function rescales the y-axis based on the data that is visible given
     the current xlim of the axis.\n
     Parameters:
     --------------
@@ -53,8 +53,8 @@ def autoscale_y(ax, margin=0.1):
         lo, hi = ax.get_xlim()
         y_displayed = yd[((xd > lo) & (xd < hi))]
         h = np.max(y_displayed) - np.min(y_displayed)
-        bot = np.min(y_displayed)-margin*h
-        top = np.max(y_displayed)+margin*h
+        bot = np.min(y_displayed) - margin * h
+        top = np.max(y_displayed) + margin * h
         return bot, top
 
     lines = ax.get_lines()

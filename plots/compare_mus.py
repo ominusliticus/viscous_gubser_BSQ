@@ -33,7 +33,8 @@ N_PLOT = (1,)
 S_PLOT = (2,)
 
 CONST_T0 = 1.0
-CONST_MU0 = array([1.0, 1.0, 1.0]).reshape(-1,1)
+CONST_MU0 = array([1.0, 1.0, 1.0]).reshape(-1, 1)
+
 
 def solve_and_plot(
         ax_1: plt.Axes,
@@ -47,8 +48,8 @@ def solve_and_plot(
         linestyle: List[str],
         add_labels: bool = False,
 ) -> None:
-    soln_1 = odeint(eom, y0s, rhos_1, args=(CONST_T0,CONST_MU0,))
-    soln_2 = odeint(eom, y0s, rhos_2, args=(CONST_T0,CONST_MU0,))
+    soln_1 = odeint(eom, y0s, rhos_1, args=(CONST_T0, CONST_MU0,))
+    soln_2 = odeint(eom, y0s, rhos_2, args=(CONST_T0, CONST_MU0,))
     t_hat = concatenate((soln_1[:, 0][::-1], soln_2[:, 0]))
     mu_hat = [concatenate((soln_1[:, i][::-1], soln_2[:, i]))
               for i in [1, 2, 3]]
@@ -67,49 +68,49 @@ def solve_and_plot(
         e_evol = milne_energy(tau, xs, 0.0, 1.0, t_interp, mu_interp, **ics)
         n_evol = milne_number(tau, xs, 0.0, 1.0, t_interp, mu_interp, **ics)[0]
         s_evol = milne_entropy(tau, xs, 0.0, 1.0, t_interp, mu_interp, **ics)
-            
+
         ax_1[T_PLOT].plot(xs, t_evol,
-                        color=color[n], lw=2, ls=linestyle[n],
-                        label=r'$\mu_0/T_0='+f'{y0s[1]/y0s[0]:.2f}$'
-                        if n == 0 else None)
+                          color=color[n], lw=2, ls=linestyle[n],
+                          label=r'$\mu_0/T_0=' + f'{y0s[1]/y0s[0]:.2f}$'
+                          if n == 0 else None)
         ax_1[MU_PLOT].plot(xs, mu_evol,
                            color=color[n], lw=2, ls=linestyle[n],
-                           label=r'$\tau = '+f'{tau:.2f}' + r'$ [fm/$c$]'
+                           label=r'$\tau = ' + f'{tau:.2f}' + r'$ [fm/$c$]'
                            if add_labels else None)
 
         pi_xx, pi_yy, pi_xy, pi_nn = milne_pi(
             tau,
-            xs, 
-            0.0, 
-            1, 
-            t_interp, 
-            mu_interp, 
+            xs,
+            0.0,
+            1,
+            t_interp,
+            mu_interp,
             pi_interp,
             **ics,
             nonzero_xy=True,
         )
 
-        ax_1[PIXX_PLOT].plot(xs, 
-                           pi_yy / (4.0 * e_evol / 3.0), 
-                           color=color[n], lw=2, ls=linestyle[n])
+        ax_1[PIXX_PLOT].plot(xs,
+                             pi_yy / (4.0 * e_evol / 3.0),
+                             color=color[n], lw=2, ls=linestyle[n])
 
         # need to add code to calculate sigma^{xy}
-        ax_1[PIXY_PLOT].plot(xs, 
-                           pi_xy / (4.0 * e_evol / 3.0), 
-                           color=color[n], lw=2, ls=linestyle[n])
-        
-        
-        ax_2[E_PLOT].plot(xs, e_evol, #  / t_evol ** 4,
+        ax_1[PIXY_PLOT].plot(xs,
+                             pi_xy / (4.0 * e_evol / 3.0),
+                             color=color[n], lw=2, ls=linestyle[n])
+
+        ax_2[E_PLOT].plot(xs, e_evol,  # / t_evol ** 4,
                           color=color[n], lw=2, ls=linestyle[n],
-                          label=r'$\mu_0/T_0='+f'{y0s[1]/y0s[0]:.2f}$'
+                          label=r'$\mu_0/T_0=' + f'{y0s[1]/y0s[0]:.2f}$'
                           if n == 0 else None)
-        ax_2[N_PLOT].plot(xs, n_evol, #  / t_evol ** 3,
-                        color=color[n], lw=2, ls=linestyle[n],
-                        label=r'$\tau='+f'{tau:.2f}$ [fm/$c$]'
-                        if add_labels else None)
-        ax_2[S_PLOT].plot(xs, s_evol, #  / t_evol ** 3,
-                        color=color[n], lw=2, ls=linestyle[n])
-        
+        ax_2[N_PLOT].plot(xs, n_evol,  # / t_evol ** 3,
+                          color=color[n], lw=2, ls=linestyle[n],
+                          label=r'$\tau=' + f'{tau:.2f}$ [fm/$c$]'
+                          if add_labels else None)
+        ax_2[S_PLOT].plot(xs, s_evol,  # / t_evol ** 3,
+                          color=color[n], lw=2, ls=linestyle[n])
+
+
 def main():
     fig, ax = plt.subplots(ncols=2, nrows=2, figsize=(2 * 7, 2 * 7))
     fig.patch.set_facecolor('white')
@@ -121,10 +122,9 @@ def main():
     taus = array([1.2, 2.0, 3.0])
     xs = linspace(-6, 6, 200)
 
-
-    t0 = 1.2
+    t0 = 0.25 * 1.2 / HBARC
     colors = ['black', 'red', 'blue']
-    for n, alpha in enumerate([0.01, 0.03, 0.05]):
+    for n, alpha in enumerate([1.e-20, 0.25, 0.5]):
         y0s = array([
             t0,
             *[alpha * t0 for _ in range(3)],
@@ -168,7 +168,6 @@ def main():
     ax[MU_PLOT].legend(loc='upper right', fontsize=20)
     fig.tight_layout()
     fig.savefig('./viscous-gubser-current-comp-mus-1.pdf')
-
 
     costumize_axis(
         ax=ax2[E_PLOT],

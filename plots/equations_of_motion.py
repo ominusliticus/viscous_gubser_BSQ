@@ -14,6 +14,8 @@ ETA_S = 0.2
 AA = 1.0 / 3.0
 
 # the equations of state stuff
+
+
 def pressure(
         temperature: float,
         chem_potential: ndarray,
@@ -47,7 +49,7 @@ def entropy(
     temp_value = (temperature / temperature_0) ** 2
     temp_value += npsum((chem_potential / chem_potential_0) ** 2)
     return_value = 4 * AA * temperature * temp_value \
-          * temperature_0 ** 2
+        * temperature_0 ** 2
     return ALPHA * return_value
 
 
@@ -73,10 +75,13 @@ def tau_R(
 ) -> float:
     e = energy(temperature=temperature, chem_potential=chem_potential,
                temperature_0=temperature_0, chem_potential_0=chem_potential_0)
-    p = pressure(temperature=temperature, chem_potential=chem_potential,
-               temperature_0=temperature_0, chem_potential_0=chem_potential_0)
+    p = pressure(
+        temperature=temperature,
+        chem_potential=chem_potential,
+        temperature_0=temperature_0,
+        chem_potential_0=chem_potential_0)
     s = entropy(temperature=temperature, chem_potential=chem_potential,
-               temperature_0=temperature_0, chem_potential_0=chem_potential_0)
+                temperature_0=temperature_0, chem_potential_0=chem_potential_0)
     return CTAUR * ETA_S * s / (e + p)
 
 
@@ -86,11 +91,11 @@ def dT_drho(
         rho: Union[float, ndarray],
         temperature_0: float,
         chem_potential_0: ndarray,
-) -> Union[float, ndarray]:    
+) -> Union[float, ndarray]:
     temperature, mu_B, mu_Q, mu_S, pi_hat = ys
     chem_potential = array([mu_B, mu_S, mu_Q])
-    return_value = npsum(pi_hat * (chem_potential * temperature_0 
-                    / (chem_potential_0 * temperature)) ** 2)
+    return_value = npsum(pi_hat * (chem_potential * temperature_0
+                                   / (chem_potential_0 * temperature)) ** 2)
     return_value += (1 / 3) * (-2 + pi_hat)
     return temperature * return_value * tanh(rho)
 
@@ -120,7 +125,7 @@ def dpi_drho(
     return_value -= pi_hat / tau_r
     return_value -= (4 / 3) * pi_hat ** 2 * tanh(rho)
     return return_value
-    
+
 
 def eom(
         ys: ndarray,
@@ -146,10 +151,19 @@ def denergy_drho(
     temp_value = (temperature / temperature_0) ** 2
     temp_value += npsum((chem_potential / chem_potential_0) ** 2)
     return_value = (
-        temperature * dT_drho(ys, rho, temperature_0, chem_potential_0) 
-        / temperature_0 ** 2
-        +
-        npsum(chem_potential * dmu_drho(ys, rho, temperature_0, chem_potential_0)
-        / chem_potential_0 ** 2)
-    )
+        temperature *
+        dT_drho(
+            ys,
+            rho,
+            temperature_0,
+            chem_potential_0) /
+        temperature_0 ** 2 +
+        npsum(
+            chem_potential *
+            dmu_drho(
+                ys,
+                rho,
+                temperature_0,
+                chem_potential_0) /
+            chem_potential_0 ** 2))
     return 12 * ALPHA * temperature_0 ** 4 * temp_value * return_value

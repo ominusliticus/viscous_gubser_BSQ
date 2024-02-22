@@ -43,28 +43,29 @@ def find_freezeout_tau(
 def denergy_dtau(
         ys: ndarray,
         tau: float,
-        r:float,
+        r: float,
         q: float,
 ) -> float:
     temperature, chem_potenial, _ = ys
     derivative = q + (1 + (q * r) ** 2 - (q * tau) ** 2) / (2 * q * tau ** 2)
     derivative /= sqrt(
-        1 + ((1 + (q * r) ** 2 - (q * tau) ** 2 ) / (2 * q * tau)) ** 2
+        1 + ((1 + (q * r) ** 2 - (q * tau) ** 2) / (2 * q * tau)) ** 2
     )
-    return_value = derivative * denergy_drho(ys, rho(tau, r, q)) * tau 
-    return_value -= energy(temperature=temperature, chem_potential=chem_potenial)
+    return_value = derivative * denergy_drho(ys, rho(tau, r, q)) * tau
+    return_value -= energy(temperature=temperature,
+                           chem_potential=chem_potenial)
     return return_value / tau ** 5
 
 
 def denergy_dr(
         ys: ndarray,
         tau: float,
-        r:float,
+        r: float,
         q: float,
 ) -> float:
     derivative = - q * r / tau
     derivative /= sqrt(
-        1 + ((1 + (q * r) ** 2 - (q * tau) ** 2 ) / (2 * q * tau)) ** 2
+        1 + ((1 + (q * r) ** 2 - (q * tau) ** 2) / (2 * q * tau)) ** 2
     )
     return derivative * denergy_drho(ys, rho(tau, r, q)) / tau ** 4
 
@@ -101,7 +102,7 @@ def solve_and_plot(
             find_freezeout_tau(
                 e_interp, e_freezeout, tau, q
             ),
-            tau, 
+            tau,
         ]
 
     ax.scatter(
@@ -143,7 +144,6 @@ def solve_and_plot(
             dx=normal_vectors[i, 0],
             dy=normal_vectors[i, 1]
         )
-
 
 
 if __name__ == "__main__":

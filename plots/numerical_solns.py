@@ -32,6 +32,7 @@ E_PLOT = (0)
 N_PLOT = (1,)
 S_PLOT = (2,)
 
+
 def solve_and_plot(
         ax_1: plt.Axes,
         ax_2: plt.Axes,
@@ -65,40 +66,40 @@ def solve_and_plot(
         s_evol = entropy(t_evol, mu_evol)  # / HBARC ** 3
 
         ax_1[T_PLOT].plot(xs, t_evol,
-                        color=color[n], lw=2, ls=linestyle[n],
-                        label=r'$\tau='+f'{tau:.2f}$ [fm/c]'
-                        if add_labels else None)
+                          color=color[n], lw=2, ls=linestyle[n],
+                          label=r'$\tau=' + f'{tau:.2f}$ [fm/c]'
+                          if add_labels else None)
         ax_1[MU_PLOT].plot(xs, mu_evol,
-                        color=color[n], lw=2, ls=linestyle[n],
-                        label=second_label if n == 0 else None)
+                           color=color[n], lw=2, ls=linestyle[n],
+                           label=second_label if n == 0 else None)
 
         pi_xx, pi_yy, pi_xy, pi_nn = milne_pi(
             tau,
-            xs, 
-            xs, 
-            1, 
-            t_interp, 
-            mu_interp, 
+            xs,
+            xs,
+            1,
+            t_interp,
+            mu_interp,
             pi_interp
         )
 
-        ax_1[PIXX_PLOT].plot(xs, 
-                           pi_yy * HBARC ** 3 / (4.0 * e_evol / 3.0), 
-                           color=color[n], lw=2, ls=linestyle[n])
+        ax_1[PIXX_PLOT].plot(xs,
+                             pi_yy * HBARC ** 3 / (4.0 * e_evol / 3.0),
+                             color=color[n], lw=2, ls=linestyle[n])
 
         # need to add code to calculate sigma^{xy}
-        ax_1[PIXY_PLOT].plot(xs, 
-                           pi_xy * HBARC ** 3 / (4.0 * e_evol / 3.0), 
-                           color=color[n], lw=2, ls=linestyle[n])
+        ax_1[PIXY_PLOT].plot(xs,
+                             pi_xy * HBARC ** 3 / (4.0 * e_evol / 3.0),
+                             color=color[n], lw=2, ls=linestyle[n])
 
-        ax_2[E_PLOT].plot(xs, e_evol, #  / t_evol ** 4,
-                        color=color[n], lw=2, ls=linestyle[n],
-                        label=r'$\tau='+f'{tau:.2f}$ [fm/c]'
-                        if add_labels else None)
-        ax_2[N_PLOT].plot(xs, n_evol, #  / t_evol ** 3,
-                        color=color[n], lw=2, ls=linestyle[n])
-        ax_2[S_PLOT].plot(xs, s_evol, #  / t_evol ** 3,
-                        color=color[n], lw=2, ls=linestyle[n])
+        ax_2[E_PLOT].plot(xs, e_evol,  # / t_evol ** 4,
+                          color=color[n], lw=2, ls=linestyle[n],
+                          label=r'$\tau=' + f'{tau:.2f}$ [fm/c]'
+                          if add_labels else None)
+        ax_2[N_PLOT].plot(xs, n_evol,  # / t_evol ** 3,
+                          color=color[n], lw=2, ls=linestyle[n])
+        ax_2[S_PLOT].plot(xs, s_evol,  # / t_evol ** 3,
+                          color=color[n], lw=2, ls=linestyle[n])
 
 
 if __name__ == "__main__":
@@ -106,7 +107,6 @@ if __name__ == "__main__":
     fig.patch.set_facecolor('white')
 
     fig2, ax2 = plt.subplots(ncols=1, nrows=3, figsize=(1 * 7, 3 * 7))
-
 
     y0s = array([1.2, 1e-20, 1.5])
     rhos_1 = linspace(-10, 0, 1000)[::-1]
@@ -170,7 +170,6 @@ if __name__ == "__main__":
     ax[MU_PLOT].legend(loc='upper right', fontsize=20)
     fig.tight_layout()
     fig.savefig('./viscous-gubser-current-soln-1.pdf')
-
 
     costumize_axis(
         ax=ax2[E_PLOT],

@@ -26,6 +26,7 @@ MU_PLOT = (1,)
 PIXX_PLOT = (2,)
 PIXY_PLOT = (3,)
 
+
 def solve_and_plot(
         ax: plt.Axes,
         y0s: ndarray,
@@ -52,12 +53,13 @@ def solve_and_plot(
     for n, tau in enumerate(taus):
         ax[T_PLOT].plot(xs, milne_T(tau, xs, 1, t_interp),
                         color=color[n], lw=2, ls=linestyle[n],
-                        label=r'$\tau='+f'{tau:.2f}$ [fm/c]'
+                        label=r'$\tau=' + f'{tau:.2f}$ [fm/c]'
                         if add_labels else None)
         ax[MU_PLOT].plot(xs, milne_mu(tau, xs, 1, mu_interp),
-                        color=color[n], lw=2, ls=linestyle[n])
+                         color=color[n], lw=2, ls=linestyle[n])
 
-        pi_xx, pi_yy, pi_xy, pi_nn = milne_pi(tau, xs, xs, 1, t_interp, mu_interp, pi_interp)
+        pi_xx, pi_yy, pi_xy, pi_nn = milne_pi(
+            tau, xs, xs, 1, t_interp, mu_interp, pi_interp)
         ax[PIXX_PLOT].plot(xs, pi_yy, color=color[n], lw=2, ls=linestyle[n])
         ax[PIXY_PLOT].plot(xs, pi_xy, color=color[n], lw=2, ls=linestyle[n])
 
@@ -96,7 +98,6 @@ if __name__ == "__main__":
         linestyle=['dashed', 'dashed', 'dashed']
     )
 
-    
     costumize_axis(
         ax=ax[T_PLOT],
         x_title=r'$x$ [fm]',
