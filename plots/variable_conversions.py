@@ -126,7 +126,7 @@ def milne_number(
         y: Union[float, ndarray],
         q: float,
         ads_T: interp1d,
-        ads_mu: List[interp1d],
+        ads_mu: Union[List[interp1d], interp1d],
         temperature_0: float,
         chem_potential_0: ndarray,
         tol: float = 1e-20,
@@ -134,7 +134,10 @@ def milne_number(
     r = sqrt(x ** 2 + y ** 2)
     rh = rho(tau, r, q)
     temp = ads_T(rh)
-    mu = array([f(rh) for f in ads_mu])
+    if isinstance(ads_mu, List):
+        mu = array([f(rh) for f in ads_mu])
+    else:
+        mu = ads_mu(rh)
 
     if isinstance(temp, ndarray):
         return number(

@@ -5,7 +5,6 @@ from numpy import linspace
 from numpy import ndarray
 from numpy import array
 from numpy import concatenate
-from numpy import isnan
 
 import matplotlib.pyplot as plt
 
@@ -67,6 +66,8 @@ def solve_and_plot(
 
         e_evol = milne_energy(tau, xs, 0.0, 1.0, t_interp, mu_interp, **ics)
         n_evol = milne_number(tau, xs, 0.0, 1.0, t_interp, mu_interp, **ics)[0]
+        # n_evol = milne_number(tau, xs, 0.0, 1.0, t_interp, mu_interp[0],
+        #                       CONST_T0, CONST_MU0[0])
         s_evol = milne_entropy(tau, xs, 0.0, 1.0, t_interp, mu_interp, **ics)
 
         ax_1[T_PLOT].plot(xs, t_evol,
@@ -124,7 +125,7 @@ def main():
 
     t0 = 0.25 * 1.2 / HBARC
     colors = ['black', 'red', 'blue']
-    for n, alpha in enumerate([1.e-20, 0.25, 0.5]):
+    for n, alpha in enumerate([0.025]):
         y0s = array([
             t0,
             *[alpha * t0 for _ in range(3)],
