@@ -50,12 +50,22 @@ def find_freezeout_tau(
         r: float,
         q: float,
 ) -> float:
-    return newton(
-        lambda tau:
-            e_freezeout - e_interp(rho(tau, r, q)) / tau ** 4,
-        x0=0.1,
-        x1=0.2,
+    def f(tau: float) -> float:
+        return e_freezeout - e_interp(rho(tau, r, q)) / tau ** 4
+        
+    try:
+        value = newton(
+        f,
+        x0=0.01,
+        x1=0.02,
     )
+    except (ValueError, RuntimeError):
+        value = newton(
+        f,
+        x0=0.001,
+        x1=0.002,
+    )
+    return value
 
 
 def find_isentropic_temperature(
@@ -278,7 +288,7 @@ def solve_and_plot(
     evol_taus_log = linspace(log(0.01), log(10), 1000)
     evol_taus = exp(evol_taus_log)
 
-    xis = [1e-20, 1, 2, 3]
+    xis = mu0_T0_ratios
     for itr in range(mu0_T0_ratios.size):
         freezeout_times = fo_surfaces[itr]
         freezeout_s = fo_entropies[itr]
@@ -362,8 +372,30 @@ def solve_and_plot(
             density=True,
         )
 
-        ax[itr].set_ylim(bottom=0, top=2)
-        ax[itr].set_xlim(left=0, right=1.1)
+        # Plot ideal trajectories
+        xi = xis[itr]
+        ys = [y0s[0], xi * y0s[0], y0s[2]]
+        soln_1 = odeint(eom, ys, rhos_1, args=(True,))
+        soln_2 = odeint(eom, ys, rhos_2, args=(True,))
+        rhos = concatenate((rhos_1[::-1], rhos_2))
+        t_hat = concatenate((soln_1[:, 0][::-1], soln_2[:, 0]))
+        mu_hat = concatenate((soln_1[:, 1][::-1], soln_2[:, 1]))
+        t_interp = interp1d(rhos, t_hat)
+        mu_interp = interp1d(rhos, mu_hat)
+
+        evol_mus = zeros((rs.size, evol_taus.size))
+        evol_temps = zeros_like(evol_mus)
+        for nn, r0 in enumerate([1e-5]):
+            evol_xs = odeint(dx_dtau, array(
+                [r0, r0, 0]), exp(evol_taus_log), args=(1.0,))
+            evol_rs = sqrt(evol_xs[:, 0] ** 2 + evol_xs[:, 1] ** 2)
+            evol_mus = milne_mu(evol_taus, evol_rs, 1.0, mu_interp)
+            evol_temps = milne_T(evol_taus, evol_rs, 1.0, t_interp)
+            
+            ax[itr].plot(evol_mus, evol_temps, lw=2, color='black', ls='dashed')
+
+        # ax[itr].set_ylim(bottom=0, top=2)
+        # ax[itr].set_xlim(left=0, right=1.1)
 
         cax_2 = fig.colorbar(color_mesh, ax=ax[itr], orientation='vertical',
                              pad=0.01, format='%.2f').ax
@@ -378,7 +410,7 @@ def main():
     fig, ax = plt.subplots(nrows=1, ncols=3, figsize=(3.0 * 7, 1 * 7))
     fig.patch.set_facecolor('white')
 
-    y0s = array([1.2, 3 * 1.2, 0.0])
+    y0s = array([1.2, 1 * 1.2, 0.0])
     rhos_1 = linspace(-10, 0, 1000)[::-1]
     rhos_2 = linspace(0, 10, 1000)
     xs = linspace(0, 6, 1000)
@@ -387,7 +419,7 @@ def main():
         fig=fig,
         ax=ax,
         y0s=y0s,
-        mu0_T0_ratios=array([1e-20, 1.5, 3]),
+        mu0_T0_ratios=array([1e-20, 5.0, 8.0]),
         rhos_1=rhos_1,
         rhos_2=rhos_2,
         xs=xs,
@@ -405,7 +437,7 @@ def main():
         y_title=r'$\tau_\mathrm{FO}$ [fm/$c$]',
     )
     ax[0].set_xlim(0, 6.0)
-    ax[0].set_ylim(0.0, 3.0)
+    # ax[0].set_ylim(0.0, 3.0)
     ax[0].text(4.5, 1.6, r'$\mu_0/T_0=3$', fontsize=18)
     ax[0].text(4.5, 0.7, r'$\mu_0/T_0=2$', fontsize=18)
     # ax[0].text(3.4, 0.55, r'$\mu_0/T_0=1$', fontsize=18)

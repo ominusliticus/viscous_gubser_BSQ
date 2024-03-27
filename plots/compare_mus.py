@@ -128,7 +128,7 @@ def main():
         add_labels=True,
     )
 
-    y0s = array([1.2, 1.5 * 1.2, 0.0])
+    y0s = array([1.2, 5 * 1.2, 0.0])
 
     solve_and_plot(
         ax_1=ax,
@@ -142,7 +142,7 @@ def main():
         linestyle=['solid', 'dashed', 'dotted'],
     )
 
-    y0s = array([1.2, 3 * 1.2, 0])
+    y0s = array([1.2, 8.0 * 1.2, 0])
 
     solve_and_plot(
         ax_1=ax,
@@ -158,13 +158,17 @@ def main():
 
     costumize_axis(
         ax=ax[T_PLOT],
-        x_title=r'$x$ [fm]',
-        y_title=r'$T(\tau, x)$ [GeV]'
+        # x_title=r'$x$ [fm]',
+        x_title=r'',
+        y_title=r'$T(\tau, x)$ [GeV]',
+        no_xnums=True,
     )
     costumize_axis(
         ax=ax[MU_PLOT],
-        x_title=r'$x$ [fm]',
-        y_title=r'$\mu(\tau, x)$ [GeV]'
+        # x_title=r'$x$ [fm]',
+        x_title=r'',
+        y_title=r'$\mu(\tau, x)$ [GeV]',
+        no_xnums=True,
     )
     costumize_axis(
         ax=ax[PIXX_PLOT],
@@ -186,7 +190,7 @@ def main():
         ax=ax2[E_PLOT],
         x_title=r'$x$ [fm]',
         # y_title=r'$\mathcal E(\tau, x)/T(\tau, x)^4$'
-        y_title=r'$\mathcal E(\tau, x)$ [GeV/fm$^{-3}$]'
+        y_title=r'$\mathcal E(\tau, x)$ [GeV/fm$^{3}$]'
     )
     ax2[E_PLOT].set_yscale('log')
     costumize_axis(
@@ -196,7 +200,7 @@ def main():
         y_title=r'$n(\tau, x)$ [fm$^{-3}$]'
     )
     ax2[N_PLOT].set_yscale('log')
-    ax2[N_PLOT].set_ylim(bottom=1e-2)
+    ax2[N_PLOT].set_ylim(bottom=1e-1)
     costumize_axis(
         ax=ax2[S_PLOT],
         x_title=r'$x$ [fm]',

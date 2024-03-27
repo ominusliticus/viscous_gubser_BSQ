@@ -20,16 +20,20 @@ def get_cmap(n: int, name: str = 'hsv'):
     '''
     return plt.cm.get_cmap(name, n)
 
-
-def costumize_axis(ax: plt.Axes, x_title: str, y_title: str):
-    ax.set_xlabel(x_title, fontsize=24)
-    ax.set_ylabel(y_title, fontsize=24)
-    ax.tick_params(axis='both', labelsize=18, top=True, right=True)
-    ax.tick_params(axis='both', which='major', direction='in', length=8)
+def costumize_axis(ax: plt.Axes, x_title: str, y_title: str,
+                   no_xnums: bool = False):
+    ax.set_xlabel(x_title, fontsize=28)
+    ax.set_ylabel(y_title, fontsize=28)
+    if no_xnums:
+        ax.tick_params(axis='x', labelsize=0, top=True)
+        ax.tick_params(axis='y', labelsize=24, right=True)
+    else:
+        ax.tick_params(axis='both', labelsize=24, top=True, right=True)
+    ax.tick_params(axis='both', which='major', direction='in', length=10)
     ax.xaxis.set_minor_locator(tck.AutoMinorLocator())
     ax.yaxis.set_minor_locator(tck.AutoMinorLocator())
     ax.tick_params(axis='both', which='minor',
-                   direction='in', length=4, top=True, right=True)
+                   direction='in', length=5, top=True, right=True)
     return ax
 
 

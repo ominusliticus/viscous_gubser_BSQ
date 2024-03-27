@@ -9,10 +9,12 @@ from typing import Union
 
 # Note on the the units: everything is expected to be in units fm
 
-ALPHA = 3 * pi ** 2 * (16 + 105 / 4) / 90
+NC = 3
+NF = 2.5
+ALPHA = (2 * (NC **2 - 1) + 7 * NC * NF / 2)
+BETA = 4 * NC * NF
 CTAUR = 5
 ETA_S = 0.2
-AA = 1.0 / 3.0
 
 # the equations of state stuff
 
@@ -21,35 +23,34 @@ def pressure(
         temperature: float,
         chem_potential: float,
 ) -> float:
-    return_value = AA * temperature ** 4 * cosh(chem_potential / temperature)
-    return ALPHA * return_value
+    return_value = BETA * chem_potential ** 2 * temperature ** 2 / 216
+    return_value += BETA * chem_potential ** 4 / 324 / pi ** 2
+    return_value += ALPHA * pi ** 2 * temperature ** 4 / 90
+    return return_value
 
 
 def energy(
         temperature: float,
         chem_potential: float,
 ) -> float:
-    return_value = temperature ** 4 * cosh(chem_potential / temperature)
-    return ALPHA * return_value
+    return 3 * pressure(temperature, chem_potential)
 
 
 def entropy(
         temperature: float,
         chem_potential: float,
 ) -> float:
-    return_value = AA * temperature ** 2 * (
-        4 * temperature * cosh(chem_potential / temperature)
-        -
-        chem_potential * sinh(chem_potential / temperature)
-    )
-    return ALPHA * return_value
+    return_value = 2 * pi ** 2 * ALPHA * temperature ** 3 / 45
+    return_value += BETA * temperature * chem_potential ** 2 / 108
+    return return_value
 
 
 def number(
         temperature: float,
         chem_potential: float,
 ) -> float:
-    return_value = AA * temperature ** 3 * sinh(chem_potential / temperature)
+    return_value = BETA * temperature ** 2 * chem_potential / 108
+    return_value += BETA * chem_potential ** 3 / 81 / pi ** 2
     return ALPHA * return_value
 
 
@@ -64,32 +65,40 @@ def tau_R(
 
 
 # The equations of motion
+def f(
+        temperature: float,
+        chem_potential: float,
+) -> float:
+    numerator = 5 * BETA * 3 * pi ** 2 * chem_potential ** 2 * temperature ** 2
+    numerator += 5 * BETA * 2 * chem_potential ** 4
+    numerator += 36 * pi ** 2 * ALPHA * temperature ** 4
+
+    denominator = 72 * pi ** 4 * ALPHA * temperature ** 4
+    denominator += 288 * pi ** 2 * ALPHA * temperature ** 2 * chem_potential ** 2
+    denominator += -15 * pi ** 2 * BETA * chem_potential ** 2 * temperature ** 2
+    denominator += 20 * BETA * chem_potential ** 4
+    return numerator / denominator
+
+
 def dT_drho(
         ys: ndarray,
         rho: Union[float, ndarray],
 ) -> Union[float, ndarray]:
 
-    temperature, chem_potenial, pi_hat = ys
-    return_value = 2 * pi_hat
-    return_value /= 3 / cosh(chem_potenial / temperature) ** 2 + 1
-    return_value += -1
-    return (2 / 3) * temperature * return_value * tanh(rho)
+    temperature, chem_potential, pi_hat = ys
+    return_value = 1 + (4 * chem_potential ** 2) / (pi ** 2 * temperature ** 2)
+    return_value *= -f(temperature, chem_potential) * pi_hat
+    return_value += 1
+    return -(2 / 3) * temperature * return_value * tanh(rho)
 
 
 def dmu_drho(
         ys: ndarray,
         rho: Union[float, ndarray],
 ) -> Union[float, ndarray]:
-    temperature, chem_potenial, pi_hat = ys
-    return_value = -(
-        2
-        -
-        6 * temperature / chem_potenial * tanh(chem_potenial / temperature)
-    ) * pi_hat
-    return_value += 3 / cosh(chem_potenial / temperature) ** 2
-    return_value += 1
-    return_value /= 3 * tanh(chem_potenial / temperature) ** 2 - 4
-    return (2 / 3) * chem_potenial * return_value * tanh(rho)
+    temperature, chem_potential, pi_hat = ys
+    return_value = 1 + 2 * f(temperature, chem_potential) * pi_hat
+    return -(2 / 3) * chem_potential * return_value * tanh(rho)
 
 
 def dpi_drho(
@@ -107,10 +116,11 @@ def dpi_drho(
 def eom(
         ys: ndarray,
         rho: Union[float, ndarray],
+        ideal: bool = False
 ) -> ndarray:
     dTdrho = dT_drho(ys, rho)
     dmudrho = dmu_drho(ys, rho)
-    dpidrho = dpi_drho(ys, rho)
+    dpidrho = 0 if ideal else dpi_drho(ys, rho)
 
     return array([dTdrho, dmudrho, dpidrho])
 
@@ -119,13 +129,14 @@ def denergy_drho(
         ys: ndarray,
         rho: Union[float, ndarray],
 ) -> ndarray:
-    temperature, chem_potenial, _ = ys
-    return_value_1 = 4 * cosh(chem_potenial / temperature) * temperature
-    return_value_1 *= dT_drho(ys, rho)
-    return_value_2 = -chem_potenial * dT_drho(ys, rho)
-    return_value_2 += temperature * dmu_drho(ys, rho)
-    return_value_2 *= sinh(chem_potenial / temperature)
-    return ALPHA * temperature ** 2 * (return_value_1 + return_value_2)
+    temperature, chem_potential, _ = ys
+    return_value_1 = 24 * ALPHA * pi ** 2 * temperature ** 2 
+    return_value_1 += 5 * BETA * chem_potential ** 2
+    return_value_1 *= 3 * temperature * dT_drho(ys, rho)
+    return_value_2 = 3 * pi **2 * temperature ** 2
+    return_value_2 += 4 * chem_potential ** 2
+    return_value_2 *= 5 * BETA * chem_potential * dmu_drho(ys, rho) / pi ** 2
+    return (return_value_1 + return_value_2) / 540
 
 
 # equations of motion for alternative EoS
