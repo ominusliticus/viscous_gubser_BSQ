@@ -1,6 +1,5 @@
 from pathlib import Path
 from typing import Optional
-from typing import List
 from variable_conversions import HBARC
 from variable_conversions import milne_pi
 from variable_conversions import milne_number
@@ -10,7 +9,6 @@ from variable_conversions import u_x
 from equations_of_motion import eom
 from numpy import concatenate
 from numpy import array
-from numpy import ndarray
 from numpy import arange
 from numpy import linspace
 from scipy.interpolate import interp1d
