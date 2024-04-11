@@ -92,7 +92,7 @@ def dT_drho(
         temperature_0: float,
         chem_potential_0: ndarray,
 ) -> Union[float, ndarray]:
-    temperature, mu_B, mu_Q, mu_S, pi_hat = ys
+    temperature, mu_B, mu_S, mu_Q, pi_hat = ys
     chem_potential = array([mu_B, mu_S, mu_Q])
     return_value = npsum(pi_hat * (chem_potential * temperature_0
                                    / (chem_potential_0 * temperature)) ** 2)
@@ -106,7 +106,7 @@ def dmu_drho(
         temperature_0: float,
         chem_potential_0: ndarray,
 ) -> Union[float, ndarray]:
-    _, mu_B, mu_Q, mu_S, pi_hat = ys
+    _, mu_B, mu_S, mu_Q, pi_hat = ys
     chem_potential = array([mu_B, mu_S, mu_Q])
     return_value = 1 + pi_hat
     return -(2 / 3) * chem_potential * return_value * tanh(rho)
@@ -118,7 +118,7 @@ def dpi_drho(
         temperature_0: float,
         chem_potential_0: ndarray,
 ) -> Union[float, ndarray]:
-    temperature, mu_B, mu_Q, mu_S, pi_hat = ys
+    temperature, mu_B, mu_S, mu_Q, pi_hat = ys
     chem_potential = array([mu_B, mu_S, mu_Q])
     tau_r = tau_R(temperature, chem_potential, temperature_0, chem_potential_0)
     return_value = (4 / 3 / CTAUR) * tanh(rho)
@@ -146,7 +146,7 @@ def denergy_drho(
         temperature_0: float,
         chem_potential_0: ndarray,
 ) -> ndarray:
-    temperature, mu_B, mu_Q, mu_S, pi_hat = ys
+    temperature, mu_B, mu_S, mu_Q, _ = ys
     chem_potential = array([mu_B, mu_S, mu_Q])
     temp_value = (temperature / temperature_0) ** 2
     temp_value += npsum((chem_potential / chem_potential_0) ** 2)
@@ -156,7 +156,8 @@ def denergy_drho(
             ys,
             rho,
             temperature_0,
-            chem_potential_0) /
+            chem_potential_0
+        ) /
         temperature_0 ** 2 +
         npsum(
             chem_potential *
@@ -164,6 +165,9 @@ def denergy_drho(
                 ys,
                 rho,
                 temperature_0,
-                chem_potential_0) /
-            chem_potential_0 ** 2))
-    return 12 * ALPHA * temperature_0 ** 4 * temp_value * return_value
+                chem_potential_0
+            ) /
+            chem_potential_0 ** 2
+        )
+    )
+    return 12 * AA * ALPHA * temperature_0 ** 4 * temp_value * return_value
