@@ -438,10 +438,10 @@ def main():
     )
     ax[0].set_xlim(0, 6.0)
     # ax[0].set_ylim(0.0, 3.0)
-    ax[0].text(4.5, 1.6, r'$\mu_0/T_0=3$', fontsize=18)
-    ax[0].text(4.5, 0.7, r'$\mu_0/T_0=2$', fontsize=18)
+    ax[0].text(4.5, 1.2, r'$\mu_0/T_0=3$', fontsize=18)
+    ax[0].text(3.2, 0.7, r'$\mu_0/T_0=2$', fontsize=18)
     # ax[0].text(3.4, 0.55, r'$\mu_0/T_0=1$', fontsize=18)
-    ax[0].text(3.0, 0.1, r'$\mu_0/T_0=0$', fontsize=18)
+    ax[0].text(2.0, 0.0, r'$\mu_0/T_0=0$', fontsize=18)
 
     costumize_axis(
         ax=ax[1],
@@ -449,14 +449,14 @@ def main():
         y_title=r'$T$ [GeV]'
     )
     ax[1].axhline(0.2, color='black')
-    ax[1].text(0.7, 0.21, '$T=200$ MeV', fontsize=18)
+    ax[1].text(4.0, 0.21, '$T=200$ MeV', fontsize=18)
     costumize_axis(
         ax=ax[2],
         x_title=r'$\mu$ [GeV]',
         y_title=r'$T$ [GeV]'
     )
     ax[2].axhline(0.2, color='black')
-    ax[2].text(0.7, 0.21, '$T=200$ MeV', fontsize=18)
+    ax[2].text(5.5, 0.23, '$T=200$ MeV', fontsize=18)
     # ax[1].set_yscale('log')
     # ax[1].text(0.1, 0.7, r'$\mu_0/T_0=1$', fontsize=18)
     # ax[1].text(0.65, 0.7, r'$\mu_0/T_0=2$', fontsize=18)

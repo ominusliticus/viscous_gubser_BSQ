@@ -342,9 +342,9 @@ def main():
     ax.set_xlim(0, 6.0)
     # ax.set_ylim(0.0, 3.0)
     ax.text(4.5, 1.6, r'$\mu_0/T_0=3$', fontsize=18)
-    ax.text(4.5, 0.7, r'$\mu_0/T_0=2$', fontsize=18)
+    ax.text(3.1, 0.7, r'$\mu_0/T_0=2$', fontsize=18)
     # ax.text(3.4, 0.55, r'$\mu_0/T_0=1$', fontsize=18)
-    ax.text(3.0, 0.1, r'$\mu_0/T_0=0$', fontsize=18)
+    ax.text(2.0, 0.0, r'$\mu_0/T_0=0$', fontsize=18)
 
     fig.tight_layout()
     fig.savefig('./freeze-out-surface.pdf')
