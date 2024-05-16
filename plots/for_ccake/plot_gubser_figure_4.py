@@ -28,7 +28,7 @@ dpi=150
 fig, ax = plt.subplot_mosaic([['e','rhoB','ux','cbar'],
                               ['pixx','Rey','pietaeta','cbar']],
                              width_ratios=[1,1,1,0.2],
-                             figsize=np.array([7*3/2,7]),
+                             figsize=np.array([7*3,7*2]),
                              constrained_layout=True)
 
 def get_reynolds_number(df,t_squared):

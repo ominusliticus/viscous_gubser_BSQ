@@ -1,3 +1,5 @@
+import sys
+sys.path.append('../')
 from pathlib import Path
 from typing import Optional
 from variable_conversions import HBARC
@@ -13,10 +15,8 @@ from numpy import arange
 from numpy import linspace
 from scipy.interpolate import interp1d
 from scipy.integrate import odeint
-import sys
 import os
 
-sys.path.append('../')
 
 
 class Config:
@@ -115,11 +115,11 @@ if __name__ == "__main__":
     pi_interp = interp1d(rhos, pi_bar_hat)
 
     tau = cfg.tau_0
-    stepx = .02
-    stepy = .02
+    stepx = .05
+    stepy = .05
     stepEta = 0.1
-    xmax = 5
-    ymax = 5
+    xmax = 5.0
+    ymax = 5.0
     xmin = -xmax
     ymin = -ymax
     etamin = -0.1

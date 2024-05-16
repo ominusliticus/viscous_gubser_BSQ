@@ -12,16 +12,14 @@ import my_plotting as myplt
 from variable_conversions import HBARC
 
 analytic_style={'ls':'-','lw':2}
-#sim_style = {'ls':'-.','lw':3.,'alpha':.5}
-sim_style = {'facecolors':'none'}
-
-time_list=['1.00', '1.10', '1.20', '1.30', '1.40', '1.50', '1.60']# Use this to focus on before FO
-#time_list=['1.00', '1.20',  '1.40',  '1.60']# Use this to focus on before FO
-time_list=['1.00', '1.50', '2.00', '2.50', '3.00']
+#sim_style = {'ls':'-'}
+sim_style = {'marker':'o','lw':.25,'edgecolors':'k'}
+regulator_list = ['1.0','2.0','2.75', '3.0']
 filter_criteria = 'abs(phi - 3.141592653589793/4.) < 1.e-2'
 
-cmap = myplt.get_cmap(len(time_list),'viridis')
-cmap = myplt.get_cmap(len(time_list),'cividis')
+#cmap = myplt.get_cmap(len(time_list),'viridis')
+cmap = myplt.get_cmap(len(regulator_list),'cividis')
+cmap = myplt.get_cmap(len(regulator_list),'nipy_spectral')
 
 mpl.rcParams['text.usetex'] = True
 
@@ -48,7 +46,7 @@ def get_reynolds_number(df,t_squared):
         return df
 
 def read_sol(analytic_sol_folder):
-    for ii, t in enumerate(time_list):
+    for ii, t in enumerate(['2.50']):
         inp_path = os.path.join(analytic_sol_folder,'tau='+t+'.txt')
         df = pd.read_table(inp_path,names=
                       ['x', 'y', 'eta', 'e', 'rhoB', 'rhoS', 'rhoQ',
@@ -62,23 +60,23 @@ def read_sol(analytic_sol_folder):
 
         df = df.query(filter_criteria)
 
-        ax['e'].plot(       df['r'],df['e'],color=cmap(ii), **analytic_style)
-        ax['rhoB'].plot(    df['r'],df['rhoB'],color=cmap(ii), **analytic_style)
-        ax['ux'].plot(      df['r'],df['ux'],color=cmap(ii), **analytic_style)
-        ax['pixx'].plot(    df['r'],-df['pixx'],color=cmap(ii), **analytic_style)
-        ax['Rey'].plot(    df['r'],df['reynolds'],color=cmap(ii), **analytic_style)
-        ax['pietaeta'].plot(df['r'],df['pietaeta'],color=cmap(ii), **analytic_style)
+        ana_color = 'red'
+        ax['e'].plot(       df['r'],df['e'],color=ana_color, **analytic_style)
+        ax['rhoB'].plot(    df['r'],df['rhoB'],color=ana_color, **analytic_style)
+        ax['ux'].plot(      df['r'],df['ux'],color=ana_color, **analytic_style)
+        ax['pixx'].plot(    df['r'],-df['pixx'],color=ana_color, **analytic_style)
+        ax['Rey'].plot(    df['r'],df['reynolds'],color=ana_color, **analytic_style)
+        ax['pietaeta'].plot(df['r'],df['pietaeta'],color=ana_color, **analytic_style)
 
 def read_sim(sim_result_folder):
     dt=.001
-    for ii,t in enumerate(time_list):
+    for ii,t in enumerate(regulator_list):
         col_names=['id','t','x', 'y', 'p','T','muB','muS','muQ','e',
                    'rhoB','rhoS','rhoQ','s','s_smoothed','s_specific',
                    'sigma','spec_s','stauRelax','bigTheta','??',
                    '??2','pi00','pixx','piyy','pixy','t2pi33','v1','v2',
                    'gamma','frz','eos']
-        idx = int(np.round((float(t)-1)/dt)/100)
-        inp_path = os.path.join(sim_result_folder,f'system_state_{idx}.dat')
+        inp_path = os.path.join(sim_result_folder,f'regulator-{t}-tau_2.5.dat')
         print(inp_path)
         df = pd.read_table(inp_path,
                            names=col_names,sep=' ',header=0)
@@ -98,18 +96,22 @@ def read_sim(sim_result_folder):
         df_query = df.query(filter_criteria)
 
         stride = 1
-        ax['e'].scatter(        df_query['r'].to_numpy()[::stride],
-            df_query['e'].to_numpy()[::stride], edgecolors=cmap(ii),**sim_style)
-        ax['rhoB'].scatter(     df_query['r'].to_numpy()[::stride],
-            df_query['rhoB'].to_numpy()[::stride],edgecolors=cmap(ii),**sim_style)
-        ax['ux'].scatter(       df_query['r'].to_numpy()[::stride],
-            df_query['ux'].to_numpy()[::stride],edgecolors=cmap(ii),**sim_style)
-        ax['pixx'].scatter(     df_query['r'].to_numpy()[::stride],
-            -df_query['pixx'].to_numpy()[::stride],edgecolors=cmap(ii),**sim_style)
-        ax['Rey'].scatter(     df_query['r'].to_numpy()[::stride],
-            df_query['reynolds'].to_numpy()[::stride],edgecolors=cmap(ii),**sim_style)
-        ax['pietaeta'].scatter( df_query['r'].to_numpy()[::stride],
-            df_query['t2pi33'].to_numpy()[::stride]/float(t)**2,edgecolors=cmap(ii),**sim_style)
+        offset = 0.0*ii
+        width = 50*(len(regulator_list)-ii)/len(regulator_list)+20-17.5
+        localstyle = {'facecolors':cmap(ii),'s':width}
+        print(width)
+        ax['e'].scatter(        df_query['r'].to_numpy()[::stride]+offset,
+            df_query['e'].to_numpy()[::stride], **localstyle, **sim_style)
+        ax['rhoB'].scatter(     df_query['r'].to_numpy()[::stride]+offset,
+            df_query['rhoB'].to_numpy()[::stride],**localstyle, **sim_style)
+        ax['ux'].scatter(       df_query['r'].to_numpy()[::stride]+offset,
+            df_query['ux'].to_numpy()[::stride],**localstyle, **sim_style)
+        ax['pixx'].scatter(     df_query['r'].to_numpy()[::stride]+offset,
+            -df_query['pixx'].to_numpy()[::stride],**localstyle, **sim_style)
+        ax['Rey'].scatter(     df_query['r'].to_numpy()[::stride]+offset,
+            df_query['reynolds'].to_numpy()[::stride],**localstyle, **sim_style)
+        ax['pietaeta'].scatter( df_query['r'].to_numpy()[::stride]+offset,
+            df_query['t2pi33'].to_numpy()[::stride]/float(t)**2,**localstyle, **sim_style)
 
 
 def beautify():
@@ -131,38 +133,37 @@ def beautify():
 
     myplt.costumize_axis(ax=ax['cbar'],x_title='',y_title='')
 
-    tau_min = float(time_list[0])
-    tau_max = float(time_list[-1])
-    tau_list = [float(t) for t in time_list]
+    phi_list = np.arange(0,len(regulator_list))+.5
 
     #deal with the colorbar
-    delta_time = tau_list[1]-tau_list[0]
-    boundaries = np.arange(tau_min-delta_time/2,
-                                      tau_max+3*delta_time/2, delta_time)
+    boundaries = np.arange(0,len(regulator_list)+1)
 
-    norm = mpl.colors.Normalize(vmin=tau_min,vmax=tau_max)
+    norm = mpl.colors.Normalize(vmin=0,vmax=len(regulator_list))
     sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
     sm.set_array([])
-    cbar = plt.colorbar(sm, ticks=tau_list, label=r'$\tau$ (fm/c)',
+    cbar = plt.colorbar(sm, ticks=phi_list, label=r'$\tau$ (fm/c)',
                  cax = ax['cbar'],
                  boundaries=boundaries)
-    ax['e'].plot([],[],**analytic_style,label='Analytic',color=cmap(0))
-    ax['e'].scatter([],[],**sim_style,label='Simulation',edgecolors=cmap(0))
-    ax['e'].legend(loc='upper right', frameon=False,fontsize=18)
 
-    ax['ux'].set_ylim(0,2.5)
+    cbar.set_ticklabels(["{0:4.2f}".format(float(reg)) for reg in regulator_list])
+    ax['Rey'].plot([],[],**analytic_style,label='Analytic',color='red')
+    ax['Rey'].scatter([],[],**sim_style,label='Simulation')
+    ax['Rey'].legend(loc='upper right', frameon=False,fontsize=18)
+    ax['Rey'].text(0.5, 1.75, r'$\tau=2.5$ fm/c', fontsize=18)
+
+    ax['ux'].set_ylim(1E-7,2.)
     #ax['ux'].set_ylim(0,1.3)
-    ax['e'].set_ylim(0,12)
-    ax['e'].set_ylim(1.E-2,1000)
+    ax['e'].set_ylim(1E-7,12)
+    ax['e'].set_ylim(1E-7,.25)
     ax['Rey'].set_ylim(0,3.1)
-    ax['pixx'].set_ylim(1E-5,1)
-    ax['pietaeta'].set_ylim(1E-5,5)
-    ax['rhoB'].set_ylim(8E-2,10)
+    ax['pixx'].set_ylim(1E-7,.0275)
+    ax['pietaeta'].set_ylim(1E-7,.01)
+    ax['rhoB'].set_ylim(1E-7,.6)
 
-    ax['e'].set_yscale('log')
-    ax['rhoB'].set_yscale('log')
-    ax['pietaeta'].set_yscale('log')
-    ax['pixx'].set_yscale('log')
+    #ax['e'].set_yscale('log')
+    #ax['rhoB'].set_yscale('log')
+    #ax['pietaeta'].set_yscale('log')
+    #ax['pixx'].set_yscale('log')
 
 
 if __name__ == '__main__':

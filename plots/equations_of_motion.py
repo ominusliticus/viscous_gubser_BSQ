@@ -35,7 +35,7 @@ def energy(
         chem_potential_0: ndarray,
 ) -> float:
     return_value = (temperature / temperature_0) ** 2
-    return_value += npsum((chem_potential / chem_potential_0) ** 2)
+    return_value += npsum((array(chem_potential) / chem_potential_0) ** 2)
     return_value = temperature_0 ** 4 * return_value ** 2
     return ALPHA * return_value
 

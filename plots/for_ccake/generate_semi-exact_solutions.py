@@ -1,3 +1,9 @@
+#/usr/bin/env python
+
+import sys
+import os
+sys.path.append('../')
+
 from pathlib import Path
 from typing import Optional
 from typing import List
@@ -15,10 +21,11 @@ from numpy import arange
 from numpy import linspace
 from scipy.interpolate import interp1d
 from scipy.integrate import odeint
-import sys
-import os
 
-sys.path.append('../')
+import numpy as np
+
+from tqdm import tqdm
+
 
 
 class Config:
@@ -115,8 +122,8 @@ if __name__ == "__main__":
     mu_interp = [interp1d(rhos, f) for f in mu_hat]
     pi_interp = interp1d(rhos, pi_bar_hat)
 
-    stepx = .02
-    stepy = .02
+    stepx = .05
+    stepy = .05
     stepEta = 0.1
     xmax = 5
     ymax = 5
@@ -126,18 +133,20 @@ if __name__ == "__main__":
     hbarc = 0.1973269804
 
     # Write header
-    dir_name = f'tau0={cfg.tau_0:.2f}_T0={cfg.temp_0:.2f}_muB0={cfg.muB_0:.2f}__muS0={cfg.muS_0:.2f}_muQ0={cfg.muQ_0:.2f}pi0={cfg.pi_0:.2f}'
+    dir_name = cfg.output_dir
     dir_path = Path(dir_name).absolute()
-
-    try:
+    if not os.path.exists(dir_path):
         os.mkdir(dir_path)
-    except (FileExistsError):
-        pass
+    file_name = f'init_conditions.txt'
+    path = os.path.join(dir_path, file_name)
+    #path = Path(cfg.output_dir).absolute() / file_name
+    with open(str(path), 'w') as f:
+        f.write(f'#0 {stepx} {stepy} {stepEta} 0 {xmin} {ymin} {etamin}\n')
 
-    print(cfg.tau_0, cfg.tau_f, cfg.tau_step)
-    for tau in linspace(cfg.tau_0, cfg.tau_f, int(
-            (cfg.tau_f - cfg.tau_0) / cfg.tau_step) + 1):
-        file_name = f'{dir_name}/tau={tau:.2f}.txt'
+    list_of_times = [t for t in np.arange(cfg.tau_0, cfg.tau_f+cfg.tau_step, cfg.tau_step)]
+    print('Writing initial conditions for times: ',list_of_times)
+    for tau in tqdm(list_of_times):
+        file_name = f'tau={tau:.2f}.txt'
         path = Path(cfg.output_dir).absolute() / file_name
         with open(str(path), 'w') as f:
             f.write(f'#0 {stepx} {stepy} {stepEta} 0 {xmin} {ymin} {etamin}\n')
