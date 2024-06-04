@@ -52,7 +52,7 @@ def find_freezeout_tau(
 ) -> float:
     def f(tau: float) -> float:
         return e_freezeout - e_interp(rho(tau, r, q)) / tau ** 4
-        
+
     try:
         value = newton(
         f,
@@ -391,7 +391,7 @@ def solve_and_plot(
             evol_rs = sqrt(evol_xs[:, 0] ** 2 + evol_xs[:, 1] ** 2)
             evol_mus = milne_mu(evol_taus, evol_rs, 1.0, mu_interp)
             evol_temps = milne_T(evol_taus, evol_rs, 1.0, t_interp)
-            
+
             ax[itr].plot(evol_mus, evol_temps, lw=2, color='black', ls='dashed')
 
         # ax[itr].set_ylim(bottom=0, top=2)
@@ -401,7 +401,7 @@ def solve_and_plot(
                              pad=0.01, format='%.2f').ax
         for t in cax_2.get_yticklabels():
             t.set_fontsize(18)
-        cax_2.set_ylabel(r'density', fontsize=20)
+        cax_2.set_ylabel(r'count (normalized)', fontsize=20)
 
     return heat_map
 
@@ -450,6 +450,7 @@ def main():
     )
     ax[1].axhline(0.2, color='black')
     ax[1].text(4.0, 0.21, '$T=200$ MeV', fontsize=18)
+    ax[1].text(4.5, 1.00, '$s/n=\\; $const', rotation=30, fontsize=18)
     costumize_axis(
         ax=ax[2],
         x_title=r'$\mu$ [GeV]',
@@ -457,6 +458,7 @@ def main():
     )
     ax[2].axhline(0.2, color='black')
     ax[2].text(5.5, 0.23, '$T=200$ MeV', fontsize=18)
+    ax[2].text(6.5, 0.95, '$s/n=\\; $const', rotation=16, fontsize=18)
     # ax[1].set_yscale('log')
     # ax[1].text(0.1, 0.7, r'$\mu_0/T_0=1$', fontsize=18)
     # ax[1].text(0.65, 0.7, r'$\mu_0/T_0=2$', fontsize=18)
