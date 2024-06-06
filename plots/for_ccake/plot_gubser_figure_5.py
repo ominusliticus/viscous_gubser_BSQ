@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import sys
 import os
 import matplotlib as mpl
@@ -8,7 +7,6 @@ import numpy as np
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 import my_plotting as myplt
-
 from variable_conversions import HBARC
 
 analytic_style={'ls':'-','lw':2}
@@ -26,8 +24,8 @@ mpl.rcParams['text.usetex'] = True
 dpi=150
 fig, ax = plt.subplot_mosaic([['e','rhoB','ux','cbar'],
                               ['pixx','Rey','pietaeta','cbar']],
-                             width_ratios=[1,1,1,0.2],
-                             figsize=np.array([7*3/2,7]),
+                             width_ratios=[1,1,1,0.1],
+                             figsize=2.0 * np.array([7*3/2,7]),
                              constrained_layout=True)
 
 def get_reynolds_number(df,t_squared):

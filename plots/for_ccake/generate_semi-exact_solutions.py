@@ -2,21 +2,11 @@
 
 import sys
 import os
-sys.path.append('../')
 
 from pathlib import Path
 from typing import Optional
-from typing import List
-from variable_conversions import HBARC
-from variable_conversions import milne_pi
-from variable_conversions import milne_number
-from variable_conversions import milne_energy
-from variable_conversions import u_y
-from variable_conversions import u_x
-from equations_of_motion import eom
 from numpy import concatenate
 from numpy import array
-from numpy import ndarray
 from numpy import arange
 from numpy import linspace
 from scipy.interpolate import interp1d
@@ -26,6 +16,15 @@ import numpy as np
 
 from tqdm import tqdm
 
+sys.path.append('../')
+
+from variable_conversions import HBARC  # noqa: E402
+from variable_conversions import milne_pi  # noqa: E402
+from variable_conversions import milne_number  # noqa: E402
+from variable_conversions import milne_energy  # noqa: E402
+from variable_conversions import u_y  # noqa: E402
+from variable_conversions import u_x  # noqa: E402
+from equations_of_motion import eom  # noqa: E402
 
 
 class Config:
