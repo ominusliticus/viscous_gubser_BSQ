@@ -55,16 +55,16 @@ def find_freezeout_tau(
 
     try:
         value = newton(
-        f,
-        x0=0.01,
-        x1=0.02,
-    )
+            f,
+            x0=0.01,
+            x1=0.02,
+        )
     except (ValueError, RuntimeError):
         value = newton(
-        f,
-        x0=0.001,
-        x1=0.002,
-    )
+            f,
+            x0=0.001,
+            x1=0.002,
+        )
     return value
 
 
@@ -451,6 +451,8 @@ def main():
     ax[1].axhline(0.2, color='black')
     ax[1].text(4.0, 0.21, '$T=200$ MeV', fontsize=18)
     ax[1].text(4.5, 1.00, '$s/n=\\; $const', rotation=30, fontsize=18)
+    ax[1].text(0.5, 2.5, r'$\mu_0/T_0=2$', fontsize=18)
+
     costumize_axis(
         ax=ax[2],
         x_title=r'$\mu$ [GeV]',
@@ -459,6 +461,17 @@ def main():
     ax[2].axhline(0.2, color='black')
     ax[2].text(5.5, 0.23, '$T=200$ MeV', fontsize=18)
     ax[2].text(6.5, 0.95, '$s/n=\\; $const', rotation=16, fontsize=18)
+    ax[2].text(0.5, 4.4, r'$\mu_0/T_0=3$', fontsize=18)
+    for name in range(3):
+        ax[name].text(
+            0.13,
+            0.92,
+            "EoS 1",
+            transform=ax[name].transAxes,
+            fontsize=18,
+            bbox={'boxstyle': 'round', 'facecolor': 'white'},
+            horizontalalignment='center'
+        )
     # ax[1].set_yscale('log')
     # ax[1].text(0.1, 0.7, r'$\mu_0/T_0=1$', fontsize=18)
     # ax[1].text(0.65, 0.7, r'$\mu_0/T_0=2$', fontsize=18)

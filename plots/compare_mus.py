@@ -183,9 +183,18 @@ def main():
 
     ax[T_PLOT].legend(loc='upper right', fontsize=20)
     ax[MU_PLOT].legend(loc='upper right', fontsize=20)
+    for name in [T_PLOT, MU_PLOT, PIXX_PLOT, PIXY_PLOT]:
+        ax[name].text(
+            0.10,
+            0.90,
+            "EoS 1",
+            transform=ax[name].transAxes,
+            fontsize=18,
+            bbox={'boxstyle': 'round', 'facecolor': 'white'},
+            horizontalalignment='center'
+        )
     fig.tight_layout()
     fig.savefig('./viscous-gubser-current-comp-mus-1.pdf')
-
     costumize_axis(
         ax=ax2[E_PLOT],
         x_title=r'$x$ [fm]',
@@ -211,6 +220,16 @@ def main():
 
     ax2[E_PLOT].legend(loc='upper right', fontsize=20)
     ax2[N_PLOT].legend(loc='upper right', fontsize=20)
+    for name in [E_PLOT, N_PLOT, S_PLOT]:
+        ax2[name].text(
+            0.10,
+            0.90,
+            "EoS 1",
+            transform=ax2[name].transAxes,
+            fontsize=18,
+            bbox={'boxstyle': 'round', 'facecolor': 'white'},
+            horizontalalignment='center'
+        )
     fig2.tight_layout()
     fig2.savefig('./viscous-gubser-current-comp-mus-2.pdf')
 
