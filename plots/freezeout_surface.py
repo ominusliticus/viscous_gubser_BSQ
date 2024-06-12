@@ -488,11 +488,12 @@ def main():
     ax.set_xlim(0, 2.25)
     ax.set_ylim(.9, 2.0)
     # ax[0].text(3.4, 0.55, r'$\mu_0/T_0=1$', fontsize=18)
-    ax.text(0.2, 1.2, r'$\mu_0/T_0=0.2$', fontsize=18)
-    # ax.text()
+    ax.text(0.1, 1.05, r'$\mu_0/T_0=0.2$', fontsize=18)
+    ax.text(0.1, 0.95, "EoS 2", fontsize=18, bbox=dict(
+            boxstyle='round', facecolor='white'))
 
     fig.tight_layout()
-    fig.savefig('./freeze-out-surface.pdf')
+    fig.savefig('./freeze-out-surface-ccake.pdf')
 
 
 if __name__ == "__main__":
