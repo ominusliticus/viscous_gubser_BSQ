@@ -412,9 +412,10 @@ def solve_and_plot(
                 y=tau_FO,
                 dx=normal_vectors[i, 0],
                 dy=normal_vectors[i, 1],
-                head_width=0.01,
-                head_length=0.01,
-                color='black'
+                head_width=0.02,
+                head_length=0.02,
+                color='black',
+                lw=2.0,
             )
 
         arrows_sim = zeros((xs.size // skip_size,), dtype=FancyArrow)
@@ -428,7 +429,8 @@ def solve_and_plot(
                 head_width=0.01,
                 head_length=0.01,
                 color='red',
-                alpha=.5
+                alpha=1.0,
+                linewidth=2,
             )
 
        #heat_map = get_cmap(copper, freezeout_s.size)
@@ -444,11 +446,11 @@ def solve_and_plot(
         ax[0].scatter(
             freezeout_times[:, 0],
             freezeout_times[:, 1],
-            s=3.0,
-            c='blue',
+            s=10.0,
+            c='black',
             label='Semi-Analytical'
         )
-        ax[0].legend(frameon=False,fontsize='xx-large') 
+        ax[0].legend(frameon=False,fontsize='20')
 
     return
 
@@ -475,7 +477,7 @@ def main():
         # colors=['blue'],
         update_color_bar=True,
         plot_s_n=True,
-        norm_scale=0.05
+        norm_scale=0.10
     )
 
     costumize_axis(
@@ -486,7 +488,8 @@ def main():
     ax.set_xlim(0, 2.25)
     ax.set_ylim(.9, 2.0)
     # ax[0].text(3.4, 0.55, r'$\mu_0/T_0=1$', fontsize=18)
-    ax.text(1.3, 1.1, r'$\mu_0/T_0=0.2$', fontsize=18)
+    ax.text(0.2, 1.2, r'$\mu_0/T_0=0.2$', fontsize=18)
+    # ax.text()
 
     fig.tight_layout()
     fig.savefig('./freeze-out-surface.pdf')
