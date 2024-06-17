@@ -11,12 +11,13 @@ import my_plotting as myplt  # noqa
 
 analytic_style = {'ls': '-', 'lw': 2}
 # sim_style = {'ls':'-'}
-sim_style = {'marker': 'o', 'lw': .25, 'edgecolors': 'k'}
-regulator_list = [1.0, 1.5, 2.0, 2.75, 3.0]
+sim_style = {'marker': 'o', 's': 60.0, 'lw': .25, 'edgecolors': 'k'}
+sim_list = [10, 12, 14, 16, 18, 20]
+analytic_list = [2.0, 2.2, 2.4, 2.6, 2.8, 3.0]
 filter_criteria = 'abs(phi - 3.141592653589793/4.) < 1.e-2'
 
-# cmap = myplt.get_cmap(len(time_list),'viridis')
-cmap = myplt.get_cmap(len(regulator_list), 'cividis')
+cmap = myplt.get_cmap(len(analytic_list), 'copper')
+# cmap = myplt.get_cmap(len(sim_list), 'cividis')
 # cmap = myplt.get_cmap(len(regulator_list), 'nipy_spectral')
 
 mpl.rcParams['text.usetex'] = True
@@ -46,7 +47,7 @@ def get_reynolds_number(df, t_squared):
 
 
 def read_sol(analytic_sol_folder):
-    for ii, t in enumerate(regulator_list):
+    for ii, t in enumerate(analytic_list):
         inp_path = os.path.join(analytic_sol_folder,
                                 'tau=' + f'{t:.2f}' + '.txt')
         df = pd.read_table(
@@ -99,7 +100,7 @@ def read_sol(analytic_sol_folder):
 
 def read_sim(sim_result_folder):
     dt = .001
-    for ii, t in enumerate(regulator_list):
+    for ii, t in enumerate(sim_list):
         col_names = [
             'id',
             't',
@@ -135,7 +136,7 @@ def read_sim(sim_result_folder):
             'eos']
         inp_path = os.path.join(
             sim_result_folder,
-            f'regulator-{t}-tau_2.5.dat')
+            f'system_state_{t}.dat')
         print(inp_path)
         df = pd.read_table(inp_path,
                            names=col_names, sep=' ', header=0)
@@ -156,9 +157,9 @@ def read_sim(sim_result_folder):
 
         stride = 1
         offset = 0.0 * ii
-        width = 50 * (len(regulator_list) - ii) / \
-            len(regulator_list) + 20 - 17.5
-        localstyle = {'facecolors': cmap(ii), 's': width}
+        width = 50 * (len(sim_list) - ii) / \
+            len(sim_list) + 20 - 17.5
+        localstyle = {'facecolors': cmap(ii)}
         print(width)
         ax['e'].scatter(
             df_query['r'].to_numpy()[::stride] + offset,
@@ -195,7 +196,7 @@ def read_sim(sim_result_folder):
 def beautify():
     # fig.set_tight_layout(True)
     ylabels = {'e': r'$\varepsilon$ (GeV/fm$^3$)',
-               'rhoB': r'$\rho_B$ (fm$^{-3}$)',
+               'rhoB': r'$n_B$ (fm$^{-3}$)',
                'ux': r'$u^x$',
                'pixx': r'$-\pi^{xx}$ (GeV/fm$^3$)',
                'Rey': r'$\mathcal{R}^{-1}$',
@@ -211,12 +212,12 @@ def beautify():
 
     myplt.costumize_axis(ax=ax['cbar'], x_title='', y_title='')
 
-    phi_list = np.arange(0, len(regulator_list)) + .5
+    phi_list = np.arange(0, len(sim_list)) + .5
 
     # deal with the colorbar
-    boundaries = np.arange(0, len(regulator_list) + 1)
+    boundaries = np.arange(0, len(sim_list) + 1)
 
-    norm = mpl.colors.Normalize(vmin=0, vmax=len(regulator_list))
+    norm = mpl.colors.Normalize(vmin=0, vmax=len(sim_list))
     sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
     sm.set_array([])
     cbar = plt.colorbar(sm, ticks=phi_list, label=r'$\tau$ (fm/c)',
@@ -224,14 +225,14 @@ def beautify():
                         boundaries=boundaries)
 
     cbar.set_ticklabels(["{0:4.2f}".format(float(reg))
-                        for reg in regulator_list])
-    ax['Rey'].plot([], [], **analytic_style, label='Analytic', color='red')
-    ax['Rey'].scatter([], [], **sim_style, label='Simulation')
+                        for reg in analytic_list])
+    ax['Rey'].plot([], [], **analytic_style, label='Analytic', color=cmap(0))
+    ax['Rey'].scatter([], [], **sim_style, label='Simulation', color=cmap(0))
     ax['Rey'].legend(loc='upper right', frameon=False, fontsize=18)
-    ax['Rey'].text(0.5, 1.75, r'$\tau=2.5$ fm/c', fontsize=18)
+    ax['Rey'].text(0.5, 2.7, 'EoS 2', fontsize=18, bbox={'boxstyle': 'round'})
 
     # ax['ux'].set_ylim(1E-7, 2.)
-    # ax['ux'].set_ylim(0,1.3)
+    # ax['ux'].set_ylim(0, 1.3)
     # ax['e'].set_ylim(1E-7, 12)
     # ax['e'].set_ylim(1E-7, .25)
     # ax['Rey'].set_ylim(0, 3.1)
@@ -239,10 +240,15 @@ def beautify():
     # ax['pietaeta'].set_ylim(1E-7, .01)
     # ax['rhoB'].set_ylim(1E-7, .6)
 
-    # ax['e'].set_yscale('log')
-    # ax['rhoB'].set_yscale('log')
-    # ax['pietaeta'].set_yscale('log')
-    # ax['pixx'].set_yscale('log')
+    ax['e'].set_ylim(bottom=1e-2)
+    ax['rhoB'].set_ylim(bottom=1e-2)
+    ax['pixx'].set_ylim(bottom=1e-7)
+    ax['pietaeta'].set_ylim(bottom=1e-7)
+
+    ax['e'].set_yscale('log')
+    ax['rhoB'].set_yscale('log')
+    ax['pietaeta'].set_yscale('log')
+    ax['pixx'].set_yscale('log')
 
 
 if __name__ == '__main__':

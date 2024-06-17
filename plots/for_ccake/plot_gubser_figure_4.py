@@ -12,7 +12,7 @@ import my_plotting as myplt  # noqa
 
 analytic_style = {'ls': '-', 'lw': 2}
 # sim_style = {'ls':'-.','lw':3.,'alpha':.5}
-sim_style = {'facecolors': 'none'}
+# sim_style = {'facecolors': 'none'}
 
 time_list = ['1.00', '1.10', '1.20', '1.30', '1.40',
              '1.50', '1.60']  # Use this to focus on before FO
@@ -27,7 +27,7 @@ mpl.rcParams['text.usetex'] = True
 dpi = 150
 fig, ax = plt.subplot_mosaic([['e', 'rhoB', 'ux', 'cbar'],
                               ['pixx', 'Rey', 'pietaeta', 'cbar']],
-                             width_ratios=[1, 1, 1, 0.2],
+                             width_ratios=[1, 1, 1, 0.1],
                              figsize=np.array([7 * 3, 7 * 2]),
                              constrained_layout=True)
 
@@ -153,31 +153,33 @@ def read_sim(sim_result_folder):
         df = get_reynolds_number(df, float(t)**2)
         df_query = df.query(filter_criteria)
 
+        sim_style = {'facecolor': cmap(ii), 's': 60, 'edgecolors': 'k'}
+
         stride = 1
         ax['e'].scatter(
             df_query['r'].to_numpy()[
                 ::stride], df_query['e'].to_numpy()[
-                ::stride], edgecolors=cmap(ii), **sim_style)
+                ::stride], **sim_style)
         ax['rhoB'].scatter(
             df_query['r'].to_numpy()[
                 ::stride], df_query['rhoB'].to_numpy()[
-                ::stride], edgecolors=cmap(ii), **sim_style)
+                ::stride], **sim_style)
         ax['ux'].scatter(
             df_query['r'].to_numpy()[
                 ::stride], df_query['ux'].to_numpy()[
-                ::stride], edgecolors=cmap(ii), **sim_style)
+                ::stride], **sim_style)
         ax['pixx'].scatter(
             df_query['r'].to_numpy()[
                 ::stride], df_query['pixx'].to_numpy()[
-                ::stride], edgecolors=cmap(ii), **sim_style)
+                ::stride], **sim_style)
         ax['Rey'].scatter(
             df_query['r'].to_numpy()[
                 ::stride], df_query['reynolds'].to_numpy()[
-                ::stride], edgecolors=cmap(ii), **sim_style)
+                ::stride], **sim_style)
         ax['pietaeta'].scatter(
             df_query['r'].to_numpy()[
                 ::stride], df_query['t2pi33'].to_numpy()[
-                ::stride] / float(t)**2, edgecolors=cmap(ii), **sim_style)
+                ::stride] / float(t)**2,  **sim_style)
 
 
 def beautify():
@@ -218,14 +220,14 @@ def beautify():
     ax['e'].scatter(
         [],
         [],
-        **sim_style,
         label='Simulation',
         edgecolors=cmap(0))
     ax['e'].legend(loc='upper right', frameon=False, fontsize=18)
+    ax['e'].text(3.0, 6.0, "EoS 2", fontsize=18, bbox={'boxstyle': 'round'})
 
     # ax['ux'].set_ylim(0,3.3)
     ax['ux'].set_ylim(0, 1.3)
-    ax['e'].set_ylim(0, 12)
+    ax['e'].set_ylim(0, 8)
     ax['Rey'].set_ylim(0, 3.1)
 
 

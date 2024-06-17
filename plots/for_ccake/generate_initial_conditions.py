@@ -126,7 +126,7 @@ if __name__ == "__main__":
     hbarc = 0.1973269804
 
     # Write header
-    dir_name = f'tau0={cfg.tau_0:.2f}_T0={cfg.temp_0:.2f}_muB0={cfg.muB_0:.2f}__muS0={cfg.muS_0:.2f}_muQ0={cfg.muQ_0:.2f}pi0={cfg.pi_0:.2f}'
+    dir_name = f'{cfg.output_dir}'
     dir_path = Path(dir_name).absolute()
 
     try:
@@ -136,6 +136,7 @@ if __name__ == "__main__":
 
     file_name = f'{dir_name}/init_conditions.txt'
     path = Path(file_name).absolute()
+    print(path)
     with open(str(path), 'w') as f:
         f.write(f'#0 {stepx} {stepy} {stepEta} 0 {xmin} {ymin} {etamin}\n')
 
