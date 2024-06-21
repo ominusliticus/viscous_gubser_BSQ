@@ -1,24 +1,25 @@
-from pathlib import Path
-from typing import Optional
-from typing import List
-from variable_conversions import HBARC
-from variable_conversions import milne_pi
-from variable_conversions import milne_number
-from variable_conversions import milne_energy
-from variable_conversions import u_y
-from variable_conversions import u_x
-from equations_of_motion import eom
-from numpy import concatenate
-from numpy import array
-from numpy import ndarray
-from numpy import arange
-from numpy import linspace
-from scipy.interpolate import interp1d
-from scipy.integrate import odeint
 import sys
 import os
 
 sys.path.append('../')
+
+from pathlib import Path  # noqa
+from typing import Optional  # noqa
+from typing import List  # noqa
+from variable_conversions import HBARC  # noqa
+from variable_conversions import milne_pi  # noqa
+from variable_conversions import milne_number  # noqa
+from variable_conversions import milne_energy  # noqa
+from variable_conversions import u_y  # noqa
+from variable_conversions import u_x  # noqa
+from equations_of_motion import eom  # noqa
+from numpy import concatenate  # noqa
+from numpy import array  # noqa
+from numpy import ndarray  # noqa
+from numpy import arange  # noqa
+from numpy import linspace  # noqa
+from scipy.interpolate import interp1d  # noqa
+from scipy.integrate import odeint  # noqa
 
 
 class Config:
