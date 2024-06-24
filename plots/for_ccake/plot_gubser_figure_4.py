@@ -223,7 +223,8 @@ def beautify():
         label='Simulation',
         edgecolors=cmap(0))
     ax['e'].legend(loc='upper right', frameon=False, fontsize=18)
-    ax['e'].text(3.0, 6.0, "EoS 2", fontsize=18, bbox={'boxstyle': 'round'})
+    ax['e'].text(3.5, 6.2, "EoS 2", fontsize=18, bbox={'boxstyle': 'round',
+                                                       'facecolor': 'white'})
 
     # ax['ux'].set_ylim(0,3.3)
     ax['ux'].set_ylim(0, 1.3)
@@ -239,6 +240,6 @@ if __name__ == '__main__':
     beautify()
 
     if (len(sys.argv) < 4):
-        fig.savefig('test.png')
+        fig.savefig('gubser_without_regulator.pdf')
     else:
         fig.savefig(sys.argv[3])

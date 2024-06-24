@@ -226,10 +226,11 @@ def beautify():
 
     cbar.set_ticklabels(["{0:4.2f}".format(float(reg))
                         for reg in analytic_list])
-    ax['Rey'].plot([], [], **analytic_style, label='Analytic', color=cmap(0))
-    ax['Rey'].scatter([], [], **sim_style, label='Simulation', color=cmap(0))
-    ax['Rey'].legend(loc='upper right', frameon=False, fontsize=18)
-    ax['Rey'].text(0.5, 2.7, 'EoS 2', fontsize=18, bbox={'boxstyle': 'round'})
+    ax['e'].plot([], [], **analytic_style, label='Analytic', color=cmap(0))
+    ax['e'].scatter([], [], **sim_style, label='Simulation', color=cmap(0))
+    ax['e'].legend(loc='upper right', frameon=False, fontsize=18)
+    ax['e'].text(3.5, 0.205, 'EoS 2', fontsize=18, bbox={'boxstyle': 'round',
+                                                         'facecolor': 'white'})
 
     # ax['ux'].set_ylim(1E-7, 2.)
     # ax['ux'].set_ylim(0, 1.3)
