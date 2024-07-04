@@ -183,7 +183,7 @@ def main():
 
     ax[T_PLOT].legend(loc='upper right', fontsize=20)
     ax[MU_PLOT].legend(loc='upper right', fontsize=20)
-    for name in [T_PLOT, MU_PLOT, PIXX_PLOT, PIXY_PLOT]:
+    for name in [T_PLOT]:  # , MU_PLOT, PIXX_PLOT, PIXY_PLOT]:
         ax[name].text(
             0.10,
             0.90,
@@ -220,7 +220,7 @@ def main():
 
     ax2[E_PLOT].legend(loc='upper right', fontsize=20)
     ax2[N_PLOT].legend(loc='upper right', fontsize=20)
-    for name in [E_PLOT, N_PLOT, S_PLOT]:
+    for name in [E_PLOT]:  # , N_PLOT, S_PLOT]:
         ax2[name].text(
             0.10,
             0.90,
