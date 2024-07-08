@@ -186,8 +186,19 @@ def main():
     for name in [T_PLOT]:  # , MU_PLOT, PIXX_PLOT, PIXY_PLOT]:
         ax[name].text(
             0.10,
-            0.90,
+            0.85,
             "EoS 1",
+            transform=ax[name].transAxes,
+            fontsize=20,
+            bbox={'facecolor': 'white'},
+            horizontalalignment='center'
+        )
+    for name, label in zip([T_PLOT, MU_PLOT, PIXX_PLOT, PIXY_PLOT],
+                           ['a', 'b', 'c', 'd']):
+        ax[name].text(
+            0.07,
+            0.93,
+            f'({label})',
             transform=ax[name].transAxes,
             fontsize=18,
             bbox={'boxstyle': 'round', 'facecolor': 'white'},
@@ -223,10 +234,20 @@ def main():
     for name in [E_PLOT]:  # , N_PLOT, S_PLOT]:
         ax2[name].text(
             0.10,
-            0.90,
+            0.85,
             "EoS 1",
             transform=ax2[name].transAxes,
             fontsize=18,
+            bbox={'facecolor': 'white'},
+            horizontalalignment='center'
+        )
+    for name, label in zip([E_PLOT, N_PLOT, S_PLOT], ['a', 'b', 'c', 'd']):
+        ax2[name].text(
+            0.07,
+            0.93,
+            f'({label})',
+            transform=ax2[name].transAxes,
+            fontsize=20,
             bbox={'boxstyle': 'round', 'facecolor': 'white'},
             horizontalalignment='center'
         )
