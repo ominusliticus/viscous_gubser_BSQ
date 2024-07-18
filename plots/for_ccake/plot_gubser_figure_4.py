@@ -26,7 +26,7 @@ mpl.rcParams['text.usetex'] = True
 
 dpi = 150
 fig, ax = plt.subplot_mosaic([['e', 'rhoB', 'ux', 'cbar'],
-                              ['pixx', 'Rey', 'pietaeta', 'cbar']],
+                              ['pixx', 'Rey', 'pixy', 'cbar']],
                              width_ratios=[1, 1, 1, 0.1],
                              figsize=np.array([7 * 3, 7 * 2]),
                              constrained_layout=True)
@@ -90,9 +90,9 @@ def read_sol(analytic_sol_folder):
             df['reynolds'],
             color=cmap(ii),
             **analytic_style)
-        ax['pietaeta'].plot(
+        ax['pixy'].plot(
             df['r'],
-            df['pietaeta'],
+            df['pixy'],
             color=cmap(ii),
             **analytic_style)
 
@@ -176,10 +176,10 @@ def read_sim(sim_result_folder):
             df_query['r'].to_numpy()[
                 ::stride], df_query['reynolds'].to_numpy()[
                 ::stride], **sim_style)
-        ax['pietaeta'].scatter(
+        ax['pixy'].scatter(
             df_query['r'].to_numpy()[
-                ::stride], df_query['t2pi33'].to_numpy()[
-                ::stride] / float(t)**2,  **sim_style)
+                ::stride], df_query['pixy'].to_numpy()[
+                ::stride],  **sim_style)
 
 
 def beautify():
@@ -190,7 +190,7 @@ def beautify():
                'pixx': r'$\pi^{xx}$ (GeV/fm$^3$)',
                'Rey': r'$\mathcal{R}^{-1}$',
                # 'pixy':r'$\pi^{xy}$ (GeV/fm$^3$)',
-               'pietaeta': r'$\pi^{\eta \eta}$ (GeV/fm$^3$)'}
+               'pixy': r'$\pi^{xy}$ (GeV/fm$^3$)'}
     for key in ax.keys():
         if key == 'cbar':
             continue
@@ -220,16 +220,36 @@ def beautify():
     ax['e'].scatter(
         [],
         [],
-        label='Simulation',
+        label='CCAKE',
         edgecolors=cmap(0))
-    ax['e'].legend(loc='upper right', frameon=False, fontsize=18)
-    ax['e'].text(3.5, 6.2, "EoS 2", fontsize=18, bbox={'boxstyle': 'round',
-                                                       'facecolor': 'white'})
+    ax['e'].text(
+        0.90,
+        0.85,
+        "EoS 2",
+        transform=ax['e'].transAxes,
+        fontsize=20,
+        bbox={'facecolor': 'white'},
+        horizontalalignment='center',
+    )
 
     # ax['ux'].set_ylim(0,3.3)
     ax['ux'].set_ylim(0, 1.3)
     ax['e'].set_ylim(0, 8)
     ax['Rey'].set_ylim(0, 3.1)
+
+    for name, label in zip(ylabels.keys(),
+                           ['a', 'b', 'c', 'd', 'e', 'f']):
+        ax[name].text(
+            0.93,
+            0.93,
+            f'({label})',
+            transform=ax[name].transAxes,
+            fontsize=20,
+            bbox={'boxstyle': 'round', 'facecolor': 'white'},
+            horizontalalignment='center',
+        )
+
+    ax['e'].legend(loc='upper center', fontsize=18)
 
 
 if __name__ == '__main__':

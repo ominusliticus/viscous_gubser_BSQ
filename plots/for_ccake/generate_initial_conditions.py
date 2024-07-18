@@ -24,6 +24,12 @@ class Config:
         self.tau_0: Optional[float] = None
         self.tau_f: Optional[float] = None
         self.tau_step: Optional[float] = None
+        self.x_min: Optional[float] = None
+        self.x_max: Optional[float] = None
+        self.x_step: Optional[float] = None
+        self.y_min: Optional[float] = None
+        self.y_max: Optional[float] = None
+        self.y_step: Optional[float] = None
         self.temp_0: Optional[float] = None
         self.muB_0: Optional[float] = None
         self.muS_0: Optional[float] = None
@@ -51,6 +57,18 @@ class Config:
                     self.tau_f = float(value)
                 elif key == 'tau_step':
                     self.tau_step = float(value)
+                elif key == 'x_min':
+                    self.x_min = float(value)
+                elif key == 'x_max':
+                    self.x_max = float(value)
+                elif key == 'x_step':
+                    self.x_step = float(value)
+                elif key == 'y_min':
+                    self.y_min = float(value)
+                elif key == 'y_max':
+                    self.y_max = float(value)
+                elif key == 'y_step':
+                    self.y_step = float(value)
                 elif key == 'temp_0':
                     self.temp_0 = float(value)
                 elif key == 'muB_0':
@@ -115,13 +133,13 @@ if __name__ == "__main__":
     pi_interp = interp1d(rhos, pi_bar_hat)
 
     tau = cfg.tau_0
-    stepx = .05
-    stepy = .05
+    stepx = cfg.x_step
+    stepy = cfg.y_step
     stepEta = 0.1
-    xmax = 5.0
-    ymax = 5.0
-    xmin = -xmax
-    ymin = -ymax
+    xmax = cfg.x_max
+    ymax = cfg.y_max
+    xmin = cfg.x_min
+    ymin = cfg.y_min
     etamin = -0.1
     hbarc = 0.1973269804
 
