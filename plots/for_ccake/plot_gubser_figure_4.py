@@ -10,12 +10,12 @@ from variable_conversions import HBARC  # noqa
 import my_plotting as myplt  # noqa
 
 
+plot_index = 1
 analytic_style = {'ls': '-', 'lw': 2}
 # sim_style = {'ls':'-.','lw':3.,'alpha':.5}
 # sim_style = {'facecolors': 'none'}
 
-time_list = ['1.00', '1.10', '1.20', '1.30', '1.40',
-             '1.50', '1.60']  # Use this to focus on before FO
+time_list = np.arange(1.00, 1.80, 0.1)  # Use this to focus on before FO
 # time_list=['1.00', '1.20',  '1.40',  '1.60']# Use this to focus on before FO
 # time_list=['1.00', '1.50', '2.00', '3.00', '4.00', '5.00', '6.00', '7.00', '8.00', '9.00', '10.00' ]
 filter_criteria = 'abs(phi - 3.141592653589793/4.) < 1.e-2'
@@ -50,7 +50,9 @@ def get_reynolds_number(df, t_squared):
 
 def read_sol(analytic_sol_folder):
     for ii, t in enumerate(time_list):
-        inp_path = os.path.join(analytic_sol_folder, 'tau=' + t + '.txt')
+        if ii % plot_index != 0:
+            continue
+        inp_path = os.path.join(analytic_sol_folder, f'tau={t:.2f}' '.txt')
         df = pd.read_table(
             inp_path,
             names=[
@@ -100,6 +102,8 @@ def read_sol(analytic_sol_folder):
 def read_sim(sim_result_folder):
     dt = .001
     for ii, t in enumerate(time_list):
+        if ii % plot_index != 0:
+            continue
         col_names = [
             'id',
             't',
@@ -233,9 +237,9 @@ def beautify():
     )
 
     # ax['ux'].set_ylim(0,3.3)
-    ax['ux'].set_ylim(0, 1.3)
-    ax['e'].set_ylim(0, 8)
-    ax['Rey'].set_ylim(0, 3.1)
+    # ax['ux'].set_ylim(0, 1.3)
+    # ax['e'].set_ylim(0, 8)
+    # ax['Rey'].set_ylim(0, 3.1)
 
     for name, label in zip(ylabels.keys(),
                            ['a', 'b', 'c', 'd', 'e', 'f']):
